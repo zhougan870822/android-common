@@ -168,7 +168,11 @@ public class AppUtils {
         try {
             TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             if (telephonyManager != null) {
-                deviceId = telephonyManager.getDeviceId();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    deviceId=telephonyManager.getImei();
+                }else{
+                    deviceId=telephonyManager.getDeviceId();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,6 +180,27 @@ public class AppUtils {
 
         return deviceId;
     }
+
+    /**
+     * 获取本机号码
+     * @param context
+     * @return
+     */
+    @SuppressLint("MissingPermission")
+    public static String getPhone(Context context){
+        String phone = null;
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (telephonyManager != null) {
+                phone= telephonyManager.getLine1Number();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return phone;
+    }
+
 
     /**
      * 获取版本号
