@@ -39,6 +39,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="垂直镜像" />
+        <Button
+            android:id="@+id/btn6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="安装apk" />
 
 
         <ImageView

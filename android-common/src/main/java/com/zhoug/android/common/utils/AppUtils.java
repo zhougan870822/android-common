@@ -1,5 +1,6 @@
 package com.zhoug.android.common.utils;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -8,12 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -29,6 +32,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+/**
+ * App工具 哈哈我也不晓得怎么命名
+ */
 public class AppUtils {
     private static final String TAG = "AppUtils";
 
@@ -98,7 +104,7 @@ public class AppUtils {
     }
 
     /**
-     * 导航栏是否显示
+     * 底部导航栏是否显示
      * @param context
      * @return
      */
@@ -158,6 +164,20 @@ public class AppUtils {
     }
 
     /**
+     * 是否是竖屏
+     * @param context
+     * @return
+     */
+    public static boolean isPortrait(Context context){
+        int orientation = context.getResources().getConfiguration().orientation;
+        if(orientation== Configuration.ORIENTATION_PORTRAIT){
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
      * 获取设备序列号
      *
      * @return
@@ -187,7 +207,7 @@ public class AppUtils {
      * @return
      */
     @SuppressLint("MissingPermission")
-    public static String getPhone(Context context){
+    public static String getLocalPhoneNumber(Context context){
         String phone = null;
         try {
             TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -379,10 +399,11 @@ public class AppUtils {
 
     /**
      * 安装apk文件
+     * 8.0需要在manifest.xml 中注册权限REQUEST_INSTALL_PACKAGES
      */
     public static void installApk(Context context, File file, String authority) throws FileNotFoundException {
         if (!file.exists()) {
-            throw new FileNotFoundException("apk文件不存在" + file);
+            throw new FileNotFoundException("apk文件不存在" + file.getAbsolutePath());
         } else {
             Uri contentUri = null;
             Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -397,7 +418,17 @@ public class AppUtils {
             intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
             context.startActivity(intent);
             Log.i(TAG, "installApk: 安装apk");
+
+
         }
+    }
+
+    /**
+     * 安装apk文件 authority默认：context.getPackageName()+".fileProvider"
+     */
+    public static void installApk(Context context, File file ) throws FileNotFoundException {
+        AppUtils.installApk(context,file,context.getPackageName()+".fileProvider" );
+
     }
 
     /**

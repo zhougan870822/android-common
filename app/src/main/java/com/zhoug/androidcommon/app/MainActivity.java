@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,9 +18,13 @@ import com.zhoug.android.common.utils.AppUtils;
 import com.zhoug.android.common.utils.BitmapUtils;
 import com.zhoug.android.common.utils.FileUtils;
 import com.zhoug.android.common.utils.IOUtils;
+import com.zhoug.android.common.utils.TimeUtils;
 import com.zhoug.android.common.utils.UriUtils;
 
-import java.io.File;
+import java.io.FileNotFoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity>>>";
@@ -50,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
         imageView1=findViewById(R.id.imageView1);
         imageView2=findViewById(R.id.imageView2);
 
+
+        test();
+
+        addListener();
+    }
+    private void test(){
         Point screenSize = AppUtils.getScreenSize(this);
         Point realScreenSize = AppUtils.getRealScreenSize(this);
         Log.d(TAG, "screenSize:"+screenSize);
@@ -63,9 +72,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "findViews:底部导航栏是否显示"+AppUtils.isNavigationBarShow(this));
         }
 
-        addListener();
-    }
+        Log.d(TAG, "findViews:是否竖屏:"+AppUtils.isPortrait(this));
+        Log.d(TAG, "findViews: 本机号码"+AppUtils.getLocalPhoneNumber(this));
 
+        Log.d(TAG, "test: "+ TimeUtils.getCurrentTime());
+        DateFormat dateInstance = SimpleDateFormat.getDateInstance();
+        String format = dateInstance.format(new Date());
+        Log.d(TAG, "test: format="+format);
+    }
     private void addListener(){
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,6 +123,18 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent=new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
                 startActivityForResult(intent,105);
+            }
+        });
+
+        findViewById(R.id.btn6).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    AppUtils.installApk(MainActivity.this,FileUtils.getExternalFile("Tencent/QQfile_recv/qlymclz_v1.0.0.7_release.apk") );
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

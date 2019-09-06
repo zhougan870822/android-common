@@ -299,10 +299,10 @@ public class FileUtils {
             if(!file.getParentFile().exists()){
                 boolean mkdirs = file.getParentFile().mkdirs();
                 if(mkdirs){
-                    return new File(path);
+                    return file;
                 }
             }else{
-                return new File(path);
+                return file;
             }
         }
         return null;

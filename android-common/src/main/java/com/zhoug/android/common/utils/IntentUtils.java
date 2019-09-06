@@ -17,6 +17,7 @@ public class IntentUtils {
      *
      * @param context
      * @param path
+     * @param authority
      * @param minitype "audio/*" "video/*"
      * @return
      */
@@ -43,6 +44,21 @@ public class IntentUtils {
      * @param minitype "audio/*" "video/*"
      * @return
      */
+    public static Intent getReadFileProvideIntent(Context context, String path,String minitype) {
+        return getReadFileProvideIntent(context, path,context.getPackageName()+".fileProvider",minitype);
+
+
+    }
+
+    /**
+     * 调用第三方app打开文件的Intent
+     *
+     * @param context
+     * @param path
+     * @param authority
+     * @param minitype "audio/*" "video/*"
+     * @return
+     */
     public static Intent getWriteFileProvideIntent(Context context, String path, String authority,String minitype) {
         if (minitype == null) {
             minitype = "*/*";
@@ -58,5 +74,18 @@ public class IntentUtils {
         }
         return intent;
     }
+
+    /**
+     * 调用第三方app打开文件的Intent
+     *
+     * @param context
+     * @param path
+     * @param minitype "audio/*" "video/*"
+     * @return
+     */
+    public static Intent getWriteFileProvideIntent(Context context, String path,String minitype) {
+       return getWriteFileProvideIntent(context,path,context.getPackageName()+".fileProvider",minitype);
+    }
+
 
 }

@@ -8,6 +8,8 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.media.ThumbnailUtils;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 
@@ -240,5 +242,13 @@ public class BitmapUtils {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
+    /**
+     * 获取视频缩略图
+     * @param path
+     * @return
+     */
+    public static Bitmap createVideoThumbnail(String path){
+        return ThumbnailUtils.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MICRO_KIND);
+    }
 
 }
