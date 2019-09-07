@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -76,9 +78,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "findViews: 本机号码"+AppUtils.getLocalPhoneNumber(this));
 
         Log.d(TAG, "test: "+ TimeUtils.getCurrentTime());
-        DateFormat dateInstance = SimpleDateFormat.getDateInstance();
-        String format = dateInstance.format(new Date());
-        Log.d(TAG, "test: format="+format);
+        String format = SimpleDateFormat.getDateInstance().format(System.currentTimeMillis());
+        Log.d(TAG, "test: getDateInstance="+format);
+        String format2 = SimpleDateFormat.getDateTimeInstance().format(System.currentTimeMillis());
+        Log.d(TAG, "test: getDateTimeInstance="+format2);
+        String format3 = SimpleDateFormat.getTimeInstance().format(System.currentTimeMillis());
+        Log.d(TAG, "test: getTimeInstance="+format3);
     }
     private void addListener(){
         btn1.setOnClickListener(new View.OnClickListener() {
