@@ -4,28 +4,30 @@ package com.zhoug.androidcommon.app;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.zhoug.android.common.api.BitmapDraw;
 import com.zhoug.android.common.utils.AppUtils;
 import com.zhoug.android.common.utils.BitmapUtils;
 import com.zhoug.android.common.utils.FileUtils;
 import com.zhoug.android.common.utils.IOUtils;
+import com.zhoug.android.common.utils.NetworkUtils;
+import com.zhoug.android.common.utils.NetworkUtils.NetWorkBroadcastReceiver;
+import com.zhoug.android.common.utils.ResourceUtils;
 import com.zhoug.android.common.utils.TimeUtils;
 import com.zhoug.android.common.utils.UriUtils;
 
 import java.io.FileNotFoundException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btn5;
     private ImageView imageView1;
     private ImageView imageView2;
-
+    private NetWorkBroadcastReceiver netWorkBroadcastReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,13 +79,60 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "findViews:是否竖屏:"+AppUtils.isPortrait(this));
         Log.d(TAG, "findViews: 本机号码"+AppUtils.getLocalPhoneNumber(this));
 
-        Log.d(TAG, "test: "+ TimeUtils.getCurrentTime());
-        String format = SimpleDateFormat.getDateInstance().format(System.currentTimeMillis());
-        Log.d(TAG, "test: getDateInstance="+format);
-        String format2 = SimpleDateFormat.getDateTimeInstance().format(System.currentTimeMillis());
-        Log.d(TAG, "test: getDateTimeInstance="+format2);
-        String format3 = SimpleDateFormat.getTimeInstance().format(System.currentTimeMillis());
-        Log.d(TAG, "test: getTimeInstance="+format3);
+        Date parse = TimeUtils.parse("2018-11-12 08:55:36", "yyyy-MM-dd HH:mm:ss");
+        Log.d(TAG, "test: "+TimeUtils.format(parse,"yyyy-MM-dd HH:mm:ss" ));
+        Log.d(TAG, "test:"+TimeUtils.format(new Date(),null ));
+        Log.d(TAG, "test:"+TimeUtils.format(System.currentTimeMillis(),"yyyyMMddHHmmss" ));
+        Log.d(TAG, "test:"+TimeUtils.formatDateT("2018-18-12T08:55:36"));
+        Log.d(TAG, "test:"+TimeUtils.formatDateT("2018-18-12TT08:55:36","TT"));
+        Log.d(TAG, "test:"+TimeUtils.formatDateYMD("2018-18-12TT08:55:36"));
+        Log.d(TAG, "test:"+TimeUtils.formatDateHMS("2018-18-12T08:55:36"));
+        Log.d(TAG, "test:"+TimeUtils.getCurrentTime());
+        Log.d(TAG, "test:"+TimeUtils.getCurrentTime("yyyyMMddHHmm"));
+
+
+        netWorkBroadcastReceiver = NetworkUtils.registerReceiver(this, new NetworkUtils.OnNetworkChangeListener() {
+            @Override
+            public void onChangeListener(int state) {
+                switch (state){
+                    case NetworkUtils.STATE_NONE:
+                        toast("无网络");
+                        break;
+                    case NetworkUtils.STATE_MOBILE:
+                        toast("移动网络连接");
+                        break;
+                    case NetworkUtils.STATE_WIFI:
+                        toast("wifi连接");
+                        break;
+                }
+            }
+        });
+
+        Log.d(TAG, "test:getDrawableId "+ ResourceUtils.getDrawableId(this,"ic_launcher_background" ));
+        Log.d(TAG, "test:getDrawableId "+R.drawable.ic_launcher_background);
+
+        Log.d(TAG, "test:getColorId "+ ResourceUtils.getColorId(this,"colorAccent" ));
+        Log.d(TAG, "test:getColorId "+R.color.colorAccent);
+
+        Log.d(TAG, "test:getDimenId "+ ResourceUtils.getDimenId(this,"zxc" ));
+        Log.d(TAG, "test:getDimenId "+R.dimen.zxc);
+
+        Log.d(TAG, "test:getId "+ ResourceUtils.getId(this,"btn1" ));
+        Log.d(TAG, "test:getId "+R.id.btn1);
+
+        Log.d(TAG, "test:getLayoutId "+ ResourceUtils.getLayoutId(this,"activity_main" ));
+        Log.d(TAG, "test:getLayoutId "+R.layout.activity_main);
+
+        Log.d(TAG, "test:getStringId "+ ResourceUtils.getStringId(this,"string1" ));
+        Log.d(TAG, "test:getStringId "+R.string.string1);
+
+        Log.d(TAG, "test:getXmlId "+ ResourceUtils.getXmlId(this,"common_file_paths" ));
+        Log.d(TAG, "test:getXmlId "+R.xml.common_file_paths);
+
+        Log.d(TAG, "test:getStyleId "+ ResourceUtils.getStyleId(this,"AppTheme" ));
+        Log.d(TAG, "test:getStyleId "+R.style.AppTheme);
+
+
     }
     private void addListener(){
         btn1.setOnClickListener(new View.OnClickListener() {
@@ -140,6 +189,15 @@ public class MainActivity extends AppCompatActivity {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        findViewById(R.id.btn7).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent,107 );
+
             }
         });
     }
@@ -221,9 +279,47 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+        }else  if(requestCode==107 && data!=null){
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
+            if(pathFromUri!=null){
+                long time1=System.currentTimeMillis();
+                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1080, null);
+                long time2=System.currentTimeMillis();
+                Log.d(TAG, "onActivityResult:"+(time2-time1));
+                Log.d(TAG, "onActivityResult:bitmap="+bitmap);
+                Bitmap copy = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                new BitmapDraw().setAutoTextColor(false)
+                        .setBitmap(copy)
+                        .setGravity(BitmapDraw.BOTTOM)
+                        .setLineSpacing(10)
+                        .setTextSize(AppUtils.spTopx(this,18 ))
+                        .setTexts(Arrays.asList("zxc","自行车自行车在自行车自行车在自行车自行车在自行车自行车在自行车自行车在自行车自行车在465156",",OK的发了个OK的发了个OK的发了个OK的发了个OK的发了个OK的发了个"))
+                        .setPadding(20,20,20,50)
+                        .setTextColor(Color.RED)
+                        .draw();
+
+
+                long time3=System.currentTimeMillis();
+                Log.d(TAG, "onActivityResult:"+(time3-time2));
+
+                imageView1.setImageBitmap(bitmap);
+                imageView2.setImageBitmap(copy);
+
+
+            }
         }
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        NetworkUtils.unregisterReceiver(this,netWorkBroadcastReceiver );
+    }
+
+    private void toast(String msg){
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
 }

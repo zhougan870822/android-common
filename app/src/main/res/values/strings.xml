@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndroidCommon</string>
+    <string name="string1">zxczxczx</string>
+    <dimen name="zxc">12dp</dimen>
+
+
 </resources>

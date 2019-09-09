@@ -206,7 +206,7 @@ public class AppUtils {
      * @param context
      * @return
      */
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "HardwareIds"})
     public static String getLocalPhoneNumber(Context context){
         String phone = null;
         try {
