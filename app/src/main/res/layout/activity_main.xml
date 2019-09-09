@@ -51,6 +51,22 @@
             android:layout_height="wrap_content"
             android:text="图片上添加文字" />
 
+        <Button
+            android:id="@+id/btn8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="调用系统打电话" />
+        <Button
+            android:id="@+id/btn9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="调用系统发短信" />
+        <Button
+            android:id="@+id/btn10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="直接发短信" />
+
 
         <ImageView
             android:id="@+id/imageView1"

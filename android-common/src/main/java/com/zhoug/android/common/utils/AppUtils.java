@@ -452,35 +452,7 @@ public class AppUtils {
     }
 
 
-    /**
-     * 打电话
-     *
-     * @param context
-     * @param phone
-     */
-    @SuppressLint("MissingPermission")
-    public static void callPhone(Context context, String phone) {
-        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phone));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
 
-    /**
-     * 发短信
-     *
-     * @param phoneNumber
-     * @param message
-     */
-    public static void sendSMS(Context context, String phoneNumber, String message) {
-//        if(PhoneNumberUtils.isGlobalPhoneNumber(phoneNumber)){
-        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phoneNumber));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (message != null) {
-            intent.putExtra("sms_body", message);
-        }
-        context.startActivity(intent);
-//        }
-    }
 
 
     /**

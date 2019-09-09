@@ -1,13 +1,16 @@
 package com.zhoug.androidcommon.app;
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +25,7 @@ import com.zhoug.android.common.utils.BitmapUtils;
 import com.zhoug.android.common.utils.ContactsUtils;
 import com.zhoug.android.common.utils.FileUtils;
 import com.zhoug.android.common.utils.IOUtils;
+import com.zhoug.android.common.utils.IntentUtils;
 import com.zhoug.android.common.utils.NetworkUtils;
 import com.zhoug.android.common.utils.NetworkUtils.NetWorkBroadcastReceiver;
 import com.zhoug.android.common.utils.ResourceUtils;
@@ -158,9 +162,7 @@ public class MainActivity extends AppCompatActivity {
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent,101 );
+                startActivityForResult(IntentUtils.getPickImageIntent(),101 );
             }
         });
 
@@ -217,6 +219,34 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent=new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
                 startActivityForResult(intent,107 );
+
+            }
+        });
+        findViewById(R.id.btn8).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED)
+                    IntentUtils.callPhone(MainActivity.this, "10086");
+                else
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 1001);
+
+            }
+        });
+
+        findViewById(R.id.btn9).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IntentUtils.sendSms(MainActivity.this,"10086","zxcsad" );
+
+
+            }
+        });
+
+        findViewById(R.id.btn10).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IntentUtils.callPhone(MainActivity.this,"10086" );
+
 
             }
         });

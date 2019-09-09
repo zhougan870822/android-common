@@ -30,11 +30,19 @@ public class FileUtils {
             {"png","image/*"},
             {"bmp","image/*"},
             {"gif","image/*"},
+            {"webp","image/*"},
 
             {"mp4","video/*"},
             {"3gp","video/*"},
+            {"mkv","video/*"},
+            {"webm","video/*"},
 
-            {"mp3","video/*"},
+
+            {"mp3","audio/*"},
+            {"aac","audio/*"},
+            {"ogg","audio/*"},
+            {"amr","audio/*"},
+            {"wav","audio/*"},
 
             {"txt","text/plain"},
             {"doc","application/msword"},
@@ -45,22 +53,29 @@ public class FileUtils {
 
     /**
      * 获取文件的mimeType 用于设置intent.setDataAndType(uri,type) 中的type;
-     * @param path
+     * @param path 文件路径或后缀
      * @return 中的type
      */
     public static String getMimeType(String path){
         String mimeType="*/*";
-        String fileType = getSuffix(path);//文件后缀
-        if(fileType!=null){
-            for(int i=0;i<MIMEType.length;i++){
-                if(fileType.equalsIgnoreCase(MIMEType[i][0])){
-                    mimeType=MIMEType[i][1];
-                    break;
-                }
+        if(path==null){
+            return mimeType;
+        }
+
+        String fileType =path;
+        int index = path.lastIndexOf(".");
+        if(index>=0){
+            fileType=path.substring(index+1);
+        }
+        for (int i = 0; i < MIMEType.length; i++) {
+            if (fileType.equalsIgnoreCase(MIMEType[i][0])) {
+                mimeType = MIMEType[i][1];
+                break;
             }
         }
         return  mimeType;
     }
+
 
 
     /**
@@ -170,16 +185,23 @@ public class FileUtils {
      * @return
      */
     public static String getSuffix(String path){
-        String nameWithType = getNameWithSuffix(path);
+       /* String nameWithType = getNameWithSuffix(path);
         if(nameWithType==null){
             return null;
         }else{
             int index = nameWithType.lastIndexOf(".");
-            if(index>0 && index<nameWithType.length()-1){
+            if(index>=0 && index<nameWithType.length()-1){
                 return nameWithType.substring(index+1);
             }else{
                 return null;//无后缀
             }
+        }*/
+       if(path==null) return null;
+        int index = path.lastIndexOf(".");
+        if(index>=0 && index<path.length()-1){
+            return path.substring(index+1);
+        }else{
+            return null;//无后缀
         }
 
     }
