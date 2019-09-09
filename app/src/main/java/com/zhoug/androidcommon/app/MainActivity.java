@@ -16,8 +16,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.zhoug.android.common.api.BitmapDraw;
+import com.zhoug.android.common.beans.Contacts;
 import com.zhoug.android.common.utils.AppUtils;
 import com.zhoug.android.common.utils.BitmapUtils;
+import com.zhoug.android.common.utils.ContactsUtils;
 import com.zhoug.android.common.utils.FileUtils;
 import com.zhoug.android.common.utils.IOUtils;
 import com.zhoug.android.common.utils.NetworkUtils;
@@ -29,6 +31,7 @@ import com.zhoug.android.common.utils.UriUtils;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity>>>";
@@ -131,6 +134,23 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "test:getStyleId "+ ResourceUtils.getStyleId(this,"AppTheme" ));
         Log.d(TAG, "test:getStyleId "+R.style.AppTheme);
+
+        long time1=System.currentTimeMillis();
+        List<Contacts> contacts = ContactsUtils.getContacts(this);
+        long time2=System.currentTimeMillis();
+        Log.d(TAG, "test:"+(time2-time1));
+        Log.d(TAG, "test:联系人数目:"+contacts.size());
+        for (Contacts contact: contacts){
+            Log.d(TAG, "test:"+contact);
+            String telPhone = contact.getTelPhone();
+            if(telPhone!=null){
+                String[] split = telPhone.split(Contacts.separator);
+                for(String s:split){
+                    Log.d(TAG, "test:"+s);
+                }
+            }
+            Log.d(TAG, "test:>>>>>>>>>>>>>>>>");
+        }
 
 
     }
