@@ -29,6 +29,7 @@ import com.zhoug.android.common.utils.IntentUtils;
 import com.zhoug.android.common.utils.NetworkUtils;
 import com.zhoug.android.common.utils.NetworkUtils.NetWorkBroadcastReceiver;
 import com.zhoug.android.common.utils.ResourceUtils;
+import com.zhoug.android.common.utils.SmsUtils;
 import com.zhoug.android.common.utils.TimeUtils;
 import com.zhoug.android.common.utils.UriUtils;
 
@@ -245,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn10).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                IntentUtils.callPhone(MainActivity.this,"10086" );
+                SmsUtils.sendSms( "10086","1" );
 
 
             }
