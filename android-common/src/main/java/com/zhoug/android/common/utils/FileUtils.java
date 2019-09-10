@@ -80,11 +80,21 @@ public class FileUtils {
 
     /**
      * 通过文件后缀获取文件类型
-     * @param suffix 包含后缀的路径
+     * @param path 包含后缀的路径
      * @return {@link #TYPE_IMAGE,#TYPE_VIDEO,#TYPE_AUDIO,#TYPE_UNKNOWN}
      */
-    public static int getType(String suffix){
-        if(StringUtils.isEmpty(suffix))
+    public static int getType(String path){
+        String mimeType = getMimeType(path);
+        if("image/*".equalsIgnoreCase(mimeType)){
+            return TYPE_IMAGE;
+        }else  if("video/*".equalsIgnoreCase(mimeType)){
+            return TYPE_VIDEO;
+        }else  if("audio/*".equalsIgnoreCase(mimeType)){
+            return TYPE_AUDIO;
+        }else{
+            return TYPE_UNKNOWN;
+        }
+        /*if(StringUtils.isEmpty(suffix))
             return TYPE_UNKNOWN;
 
         if(suffix.contains(".")){
@@ -116,8 +126,10 @@ public class FileUtils {
                 ){
             return TYPE_AUDIO;
         }
-
         return TYPE_UNKNOWN;
+        */
+
+
 
     }
 

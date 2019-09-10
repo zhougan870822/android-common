@@ -1,4 +1,4 @@
-package com.zhoug.android.common.api;
+package com.zhoug.android.common.content;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

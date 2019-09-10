@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -18,7 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.zhoug.android.common.api.BitmapDraw;
+import com.zhoug.android.common.content.BitmapDraw;
 import com.zhoug.android.common.beans.Contacts;
 import com.zhoug.android.common.broadcast.NetworkReceiver;
 import com.zhoug.android.common.utils.AppUtils;
@@ -33,6 +34,7 @@ import com.zhoug.android.common.utils.SmsUtils;
 import com.zhoug.android.common.utils.TimeUtils;
 import com.zhoug.android.common.utils.UriUtils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private NetworkReceiver netWorkBroadcastReceiver;
     private SmsUtils.SendSmsBroadcastReceiver sendSmsBroadcastReceiver;
 
+    private String path;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void findViews(){
-        btn1=findViewById(R.id.btn1);
         btn2=findViewById(R.id.btn2);
         btn3=findViewById(R.id.btn3);
         btn4=findViewById(R.id.btn4);
@@ -128,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "test:getDimenId "+ ResourceUtils.getDimenId(this,"zxc" ));
         Log.d(TAG, "test:getDimenId "+R.dimen.zxc);
 
-        Log.d(TAG, "test:getId "+ ResourceUtils.getId(this,"btn1" ));
-        Log.d(TAG, "test:getId "+R.id.btn1);
+        Log.d(TAG, "test:getId "+ ResourceUtils.getId(this,"btn11" ));
+        Log.d(TAG, "test:getId "+R.id.btn11);
 
         Log.d(TAG, "test:getLayoutId "+ ResourceUtils.getLayoutId(this,"activity_main" ));
         Log.d(TAG, "test:getLayoutId "+R.layout.activity_main);
@@ -184,10 +187,41 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void addListener(){
-        btn1.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn1_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(IntentUtils.getPickImageIntent(),101 );
+                startActivityForResult(IntentUtils.getPickImageIntent(),1011 );
+            }
+        });
+        findViewById(R.id.btn1_2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(IntentUtils.getContentIntent("image/*"),1012 );
+
+            }
+        });
+        findViewById(R.id.btn1_3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(IntentUtils.getPickVideoIntent(),1013 );
+            }
+        });
+        findViewById(R.id.btn1_4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(IntentUtils.getContentIntent("video/*"),1014 );
+            }
+        });
+        findViewById(R.id.btn1_5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(IntentUtils.getPickAudioIntent(),1015);
+            }
+        });
+        findViewById(R.id.btn1_6).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(IntentUtils.getContentIntent("audio/*"),1016 );
             }
         });
 
@@ -273,28 +307,82 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        findViewById(R.id.btn11).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 path = FileUtils.getExternalFile("0image/" + System.currentTimeMillis() + ".jpg").getAbsolutePath();
+
+                Uri uriForFile = UriUtils.getUriForFile(MainActivity.this, path);
+                Log.d(TAG, "onClick:uriForFile="+uriForFile);
+                Log.d(TAG, "onClick:path="+UriUtils.getPathFromUri1(MainActivity.this,uriForFile ));
+
+                startActivityForResult(IntentUtils.getCaptureImageIntent(MainActivity.this, path, null), 11);
+            }
+        });
+
+        findViewById(R.id.btn12).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 path = FileUtils.getExternalFile("0video/" +System.currentTimeMillis() + ".mp4").getAbsolutePath();
+                startActivityForResult(IntentUtils.getCaptureVideoIntent(MainActivity.this, path, null), 12);
+            }
+        });
+        findViewById(R.id.btn13).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 path = FileUtils.getExternalFile("0audio/" +System.currentTimeMillis() + ".amr").getAbsolutePath();
+                startActivityForResult(IntentUtils.getCaptureAudioIntent(MainActivity.this, path, null), 13);
+            }
+        });
+
+        findViewById(R.id.btn14).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UriUtils.getPathFromUri(MainActivity.this,Uri.parse("file:///zxc/111/222/123.jpg") );
+                path = FileUtils.getExternalFile("0audio/" +System.currentTimeMillis() + ".mp4").getAbsolutePath();
+
+                UriUtils.getPathFromUri(MainActivity.this,Uri.fromFile(new File(path)) );
+
+                UriUtils.getPathFromUri(MainActivity.this,UriUtils.getUriForFile(MainActivity.this,path ));
+
+
+
+
+            }
+        });
+
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode==101 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-            Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-            if(pathFromUri!=null){
-                long time1=System.currentTimeMillis();
-                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1080, null);
-                long time2=System.currentTimeMillis();
-                Log.d(TAG, "onActivityResult:"+(time2-time1));
-                Bitmap circleBitmap = BitmapUtils.createCircleBitmap(bitmap);
-                long time3=System.currentTimeMillis();
-                Log.d(TAG, "onActivityResult:"+(time3-time2));
-                imageView1.setImageBitmap(circleBitmap);
+        if(requestCode==1011 || requestCode==1012|| requestCode==1013|| requestCode==1014|| requestCode==1015|| requestCode==1016){
+            if(data!=null){
+                String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+                String pathFromUri1 = UriUtils.getPathFromUri1(this, data.getData());
+                Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
+                Log.d(TAG, "onActivityResult:pathFromUri1="+pathFromUri1);
+                toast(pathFromUri+"");
+                if(pathFromUri!=null && FileUtils.getType(pathFromUri)==FileUtils.TYPE_IMAGE){
+                    long time1=System.currentTimeMillis();
+                    Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1080, null);
+                    long time2=System.currentTimeMillis();
+                    Log.d(TAG, "onActivityResult:"+(time2-time1));
+                    Bitmap circleBitmap = BitmapUtils.createCircleBitmap(bitmap);
+                    long time3=System.currentTimeMillis();
+                    Log.d(TAG, "onActivityResult:"+(time3-time2));
+                    imageView1.setImageBitmap(circleBitmap);
 
+                }
             }
-        }else  if(requestCode==102 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+
+        }
+        else  if(requestCode==102 && data!=null){
+            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null) {
                 long time1=System.currentTimeMillis();
@@ -314,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else  if(requestCode==103 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null) {
                 long time1=System.currentTimeMillis();
@@ -331,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else  if(requestCode==104 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null) {
                 Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1920, null);
@@ -342,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else  if(requestCode==105 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null) {
                 Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1920, null);
@@ -353,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else  if(requestCode==107 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null){
                 long time1=System.currentTimeMillis();
@@ -380,6 +468,56 @@ public class MainActivity extends AppCompatActivity {
                 imageView2.setImageBitmap(copy);
 
 
+            }
+        }else if(requestCode==11){
+            if(resultCode==RESULT_OK){
+                String pathFromUri=null;
+                if(data!=null){
+                     pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+                }
+                if(pathFromUri==null){
+                    pathFromUri=path;
+                }
+                Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
+                startActivity(IntentUtils.getReadFileIntent(MainActivity.this,pathFromUri , FileUtils.getMimeType(pathFromUri)));
+
+            }else{
+                Log.d(TAG, "onActivityResult:取消");
+            }
+
+        }else if(requestCode==12){
+            if(resultCode==RESULT_OK){
+                String pathFromUri=null;
+                if(data!=null){
+                    pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+                }
+                if(pathFromUri==null){
+                    pathFromUri=path;
+                }
+                Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
+
+                startActivity(IntentUtils.getReadFileIntent(MainActivity.this,pathFromUri , FileUtils.getMimeType(pathFromUri)));
+
+
+            }else{
+                Log.d(TAG, "onActivityResult:取消");
+            }
+        }else if(requestCode==13){
+            if(resultCode==RESULT_OK){
+                String pathFromUri=null;
+                if(data!=null){
+                    pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+                }
+                if(pathFromUri==null){
+                    pathFromUri=path;
+                }
+                Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
+
+                startActivity(IntentUtils.getReadFileIntent(MainActivity.this,pathFromUri , FileUtils.getMimeType(pathFromUri)));
+
+
+            }else{
+                Log.d(TAG, "onActivityResult:取消");
             }
         }
 

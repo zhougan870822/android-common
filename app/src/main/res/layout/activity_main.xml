@@ -11,10 +11,35 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <Button
-            android:id="@+id/btn1"
+            android:id="@+id/btn1_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="选择图片" />
+        <Button
+            android:id="@+id/btn1_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择图片2" />
+        <Button
+            android:id="@+id/btn1_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择视频" />
+        <Button
+            android:id="@+id/btn1_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择视频2" />
+        <Button
+            android:id="@+id/btn1_5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择音乐" />
+        <Button
+            android:id="@+id/btn1_6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择音乐2" />
 
         <Button
             android:id="@+id/btn2"
@@ -67,6 +92,27 @@
             android:layout_height="wrap_content"
             android:text="直接发短信" />
 
+        <Button
+            android:id="@+id/btn11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="拍照" />
+
+        <Button
+            android:id="@+id/btn12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="录像" />
+        <Button
+            android:id="@+id/btn13"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="录音" />
+        <Button
+            android:id="@+id/btn14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="UriUtils" />
 
         <ImageView
             android:id="@+id/imageView1"

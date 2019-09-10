@@ -3,8 +3,10 @@ package com.zhoug.android.common.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 
 import java.io.File;
@@ -21,10 +23,14 @@ public class IntentUtils {
      * @param minitype  "audio/*" "video/*"
      * @return
      */
-    public static Intent getReadFileProvideIntent(Context context, String path, String authority, String minitype) {
+    public static Intent getReadFileIntent(Context context, String path, String authority, String minitype) {
         if (minitype == null) {
             minitype = "*/*";
         }
+        if(authority==null){
+            authority=context.getPackageName() + ".fileProvider";
+        }
+
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//授予临时权限别忘了
@@ -44,8 +50,8 @@ public class IntentUtils {
      * @param minitype "audio/*" "video/*"
      * @return
      */
-    public static Intent getReadFileProvideIntent(Context context, String path, String minitype) {
-        return getReadFileProvideIntent(context, path, context.getPackageName() + ".fileProvider", minitype);
+    public static Intent getReadFileIntent(Context context, String path, String minitype) {
+        return getReadFileIntent(context, path, null, minitype);
 
 
     }
@@ -59,10 +65,14 @@ public class IntentUtils {
      * @param minitype  "audio/*" "video/*"
      * @return
      */
-    public static Intent getWriteFileProvideIntent(Context context, String path, String authority, String minitype) {
+    public static Intent getWriteFileIntent(Context context, String path, String authority, String minitype) {
         if (minitype == null) {
             minitype = "*/*";
         }
+        if(authority==null){
+            authority=context.getPackageName() + ".fileProvider";
+        }
+
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//授予临时权限别忘了
@@ -83,8 +93,8 @@ public class IntentUtils {
      * @param minitype "audio/*" "video/*"
      * @return
      */
-    public static Intent getWriteFileProvideIntent(Context context, String path, String minitype) {
-        return getWriteFileProvideIntent(context, path, context.getPackageName() + ".fileProvider", minitype);
+    public static Intent getWriteFileIntent(Context context, String path, String minitype) {
+        return getWriteFileIntent(context, path, null, minitype);
     }
 
 
@@ -129,6 +139,7 @@ public class IntentUtils {
 
     /**
      * 获取系统图片列表的Intent
+     *
      * @return
      */
     public static Intent getPickImageIntent() {
@@ -137,6 +148,7 @@ public class IntentUtils {
 
     /**
      * 获取系统视频列表的Intent
+     *
      * @return
      */
     public static Intent getPickVideoIntent() {
@@ -145,6 +157,7 @@ public class IntentUtils {
 
     /**
      * 获取系统音频列表的Intent
+     *
      * @return
      */
     public static Intent getPickAudioIntent() {
@@ -154,6 +167,7 @@ public class IntentUtils {
     /**
      * 获取选择文件的Intent :
      * 直接显示文件列表
+     *
      * @param mimeType {图片:"image/*";视频:"video/*";音频:"audio/*";星/星}
      * @return
      */
@@ -168,8 +182,8 @@ public class IntentUtils {
      * 获取选择文件的Intent
      * 优点:功能强大可以切换目录,可以使用文件管理器
      * 缺点:可以选择非指定类型的文件,选择的结果需要类型判断,
-     * @param mimeType {图片:"image/*";视频:"video/*";音频:"audio/*";星/星}
      *
+     * @param mimeType {图片:"image/*";视频:"video/*";音频:"audio/*";星/星}
      * @return
      */
     public static Intent getContentIntent(String mimeType) {
@@ -177,6 +191,60 @@ public class IntentUtils {
         intent.setType(mimeType);
         return intent;
     }
+
+    /**
+     * 获取调用系统拍照/录制视频/录音的intent
+     *
+     * @param context
+     * @param action    {@link MediaStore#ACTION_IMAGE_CAPTURE,MediaStore#ACTION_VIDEO_CAPTURE,MediaStore.Audio.Media#RECORD_SOUND_ACTION}
+     * @param keepPath   拍摄的文件存储路径,有的可以不会使用(比如录音会保存到默认的地址,然后把地址uri发送给你)
+     * @param authority FileProvider 的authority
+     * @return
+     */
+    public static Intent getCaptureIntent(Context context, String action, String keepPath, String authority) {
+        Intent intent = new Intent(action);
+        //储存路径的uri
+        Uri uri = UriUtils.getUriForFile(context, keepPath, authority);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        return intent;
+    }
+
+    /**
+     * 获取调用系统拍照的intent
+     * @param context
+     * @param keepPath
+     * @param authority
+     * @return
+     */
+    public static Intent getCaptureImageIntent(Context context,String keepPath, String authority) {
+        return getCaptureIntent(context,MediaStore.ACTION_IMAGE_CAPTURE , keepPath, authority);
+    }
+
+    /**
+     * 获取调用系统录制视频的intent
+     * @param context
+     * @param keepPath
+     * @param authority
+     * @return
+     */
+    public static Intent getCaptureVideoIntent(Context context,String keepPath, String authority) {
+        return getCaptureIntent(context,MediaStore.ACTION_VIDEO_CAPTURE , keepPath, authority);
+    }
+
+    /**
+     * 获取调用系统录音的intent
+     * @param context
+     * @param keepPath
+     * @param authority
+     * @return
+     */
+    public static Intent getCaptureAudioIntent(Context context,String keepPath, String authority) {
+        return getCaptureIntent(context,MediaStore.Audio.Media.RECORD_SOUND_ACTION , keepPath, authority);
+    }
+
 
 
 }
