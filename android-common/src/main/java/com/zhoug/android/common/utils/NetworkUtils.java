@@ -1,14 +1,15 @@
 package com.zhoug.android.common.utils;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.util.Log;
+
+import com.zhoug.android.common.broadcast.NetworkReceiver;
+import com.zhoug.android.common.broadcast.NetworkReceiver.OnNetworkChangeListener;
 
 
 /**
@@ -167,14 +168,8 @@ public class NetworkUtils {
      * @param onNetworkChangeListener 网络变化实时监听器
      * @return
      */
-    public static NetWorkBroadcastReceiver registerReceiver(Context context,OnNetworkChangeListener onNetworkChangeListener){
-        NetWorkBroadcastReceiver netWorkBroadcastReceiver=new NetWorkBroadcastReceiver();
-        netWorkBroadcastReceiver.setOnNetworkChangeListener(onNetworkChangeListener);
-        IntentFilter filter=new IntentFilter();
-        filter.addAction(NetWorkBroadcastReceiver.ACTION_CONNECTIVITY);
-        context.registerReceiver(netWorkBroadcastReceiver, filter);
-        Log.d(TAG, "registerReceiver:注册NetWorkBroadcastReceiver");
-        return netWorkBroadcastReceiver;
+    public static NetworkReceiver registerReceiver(Context context, OnNetworkChangeListener onNetworkChangeListener){
+        return NetworkReceiver.registerReceiver(context,onNetworkChangeListener);
     }
 
     /**
@@ -182,51 +177,11 @@ public class NetworkUtils {
      * @param context
      * @param receiver
      */
-    public static void unregisterReceiver(Context context,NetWorkBroadcastReceiver receiver){
-        if(receiver!=null){
-            context.unregisterReceiver(receiver);
-            Log.d(TAG, "unregisterReceiver:取消注册NetWorkBroadcastReceiver");
-        }
+    public static void unregisterReceiver(Context context,NetworkReceiver receiver){
+         NetworkReceiver.unregisterReceiver(context,receiver);
     }
 
-    /**
-     * 实时监听网络变化的广播,7.0以后只能动态注册
-     */
-    public static class NetWorkBroadcastReceiver extends BroadcastReceiver{
-        //监听网络连接，包括wifi和移动数据的打开和关闭,以及连接上可用的连接都会接到监听
-        public static final String ACTION_CONNECTIVITY="android.net.conn.CONNECTIVITY_CHANGE";
-        // 监听wifi的打开与关闭，与wifi的连接无关
-        public static final String ACTION_WIFI_STATE_CHANGED="android.net.wifi.WIFI_STATE_CHANGED";
 
-        /**
-         * 网络变化监听接口
-         */
-        public OnNetworkChangeListener onNetworkChangeListener;
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent!=null ){
-                if(ACTION_CONNECTIVITY.equals(intent.getAction())){
-                    if(onNetworkChangeListener!=null){
-                        onNetworkChangeListener.onChangeListener(NetworkUtils.getNetWorkState(context));
-                    }
-                }
-            }
-        }
 
-        public OnNetworkChangeListener getOnNetworkChangeListener() {
-            return onNetworkChangeListener;
-        }
-
-        public void setOnNetworkChangeListener(OnNetworkChangeListener onNetworkChangeListener) {
-            this.onNetworkChangeListener = onNetworkChangeListener;
-        }
-    }
-
-    /**
-     * 自定义网络变化监听接口
-     */
-    public interface OnNetworkChangeListener {
-        void onChangeListener(int state);
-    }
 }

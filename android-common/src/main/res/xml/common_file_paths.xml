@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--fileProvider 的path配置 7.0以后必须正确配置否则文件uri传递错误-->
     <paths>
         <root-path
             name="root"

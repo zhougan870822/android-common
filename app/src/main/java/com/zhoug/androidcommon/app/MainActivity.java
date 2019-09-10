@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.zhoug.android.common.api.BitmapDraw;
 import com.zhoug.android.common.beans.Contacts;
+import com.zhoug.android.common.broadcast.NetworkReceiver;
 import com.zhoug.android.common.utils.AppUtils;
 import com.zhoug.android.common.utils.BitmapUtils;
 import com.zhoug.android.common.utils.ContactsUtils;
@@ -27,7 +28,6 @@ import com.zhoug.android.common.utils.FileUtils;
 import com.zhoug.android.common.utils.IOUtils;
 import com.zhoug.android.common.utils.IntentUtils;
 import com.zhoug.android.common.utils.NetworkUtils;
-import com.zhoug.android.common.utils.NetworkUtils.NetWorkBroadcastReceiver;
 import com.zhoug.android.common.utils.ResourceUtils;
 import com.zhoug.android.common.utils.SmsUtils;
 import com.zhoug.android.common.utils.TimeUtils;
@@ -48,12 +48,15 @@ public class MainActivity extends AppCompatActivity {
     private Button btn5;
     private ImageView imageView1;
     private ImageView imageView2;
-    private NetWorkBroadcastReceiver netWorkBroadcastReceiver;
+    private NetworkReceiver netWorkBroadcastReceiver;
+    private SmsUtils.SendSmsBroadcastReceiver sendSmsBroadcastReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViews();
+
     }
 
     private void findViews(){
@@ -99,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "test:"+TimeUtils.getCurrentTime("yyyyMMddHHmm"));
 
 
-        netWorkBroadcastReceiver = NetworkUtils.registerReceiver(this, new NetworkUtils.OnNetworkChangeListener() {
+        netWorkBroadcastReceiver = NetworkUtils.registerReceiver(this, new NetworkReceiver.OnNetworkChangeListener() {
             @Override
             public void onChangeListener(int state) {
                 switch (state){
@@ -156,6 +159,27 @@ public class MainActivity extends AppCompatActivity {
             }
             Log.d(TAG, "test:>>>>>>>>>>>>>>>>");
         }
+
+
+        sendSmsBroadcastReceiver= SmsUtils.registerReceiver(this, new SmsUtils.OnSendSmsListener() {
+            @Override
+            public void onSendResult(boolean success) {
+                if (success) {
+                    toast("发送成功");
+                } else {
+                    toast("发送失败");
+                }
+            }
+
+            @Override
+            public void onAccept(boolean success) {
+                if (success) {
+                    toast("对方接受成功");
+                } else {
+                    toast("对方接受失败");
+                }
+            }
+        });
 
 
     }
@@ -237,16 +261,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn9).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                IntentUtils.sendSms(MainActivity.this,"10086","zxcsad" );
-
-
+                SmsUtils.sendSmsUseSystemUi(MainActivity.this,"10086","zxcsad" );
             }
         });
 
         findViewById(R.id.btn10).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SmsUtils.sendSms( "10086","1" );
+                SmsUtils.sendSms( MainActivity.this,"10086","1" );
 
 
             }
@@ -363,11 +385,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         NetworkUtils.unregisterReceiver(this,netWorkBroadcastReceiver );
+        SmsUtils.unregisterReceiver(this,sendSmsBroadcastReceiver );
     }
 
     private void toast(String msg){
