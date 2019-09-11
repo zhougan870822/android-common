@@ -2,6 +2,7 @@ package com.zhoug.androidcommon.app;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -64,6 +65,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void findViews(){
+        ActivityCompat.requestPermissions(this,new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.REQUEST_INSTALL_PACKAGES,
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
+
+
+        } , 10012);
+
         btn2=findViewById(R.id.btn2);
         btn3=findViewById(R.id.btn3);
         btn4=findViewById(R.id.btn4);
