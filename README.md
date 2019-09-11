@@ -15,6 +15,7 @@ android 通用工具包 不包含任何ui
 
 #### 使用说明
 Step 1.Add it in your root build.gradle at the end of repositories:
+
 	allprojects {
 		repositories {
 			...
