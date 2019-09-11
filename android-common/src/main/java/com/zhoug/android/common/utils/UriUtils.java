@@ -3,15 +3,27 @@ package com.zhoug.android.common.utils;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+
+import static android.provider.DocumentsContract.PROVIDER_INTERFACE;
 
 /**
  * Uri 处理工具
@@ -22,6 +34,7 @@ public class UriUtils {
     /**
      * 根据uri获取图片path
      *
+     * @deprecated use {@link #getPathFromUri(Context, Uri)} instead
      * @param context
      * @param uri
      * @return
@@ -29,7 +42,7 @@ public class UriUtils {
     @SuppressLint("NewApi")
     @Deprecated
     public static String getPathFromUri1(Context context, Uri uri) {
-        Log.i("getPathFromUri", "getPathFromUri: uri=" + uri);
+        Log.i("getPathFromUri1", "getPathFromUri1: uri=" + uri);
         if (uri == null) return null;
         String type = null;
         Cursor cursor = null;
@@ -130,40 +143,80 @@ public class UriUtils {
 
     /**
      * 根据uri获取文件path
-     * uri类型:{
-     *  content://com.zhoug.androidcommon.app.fileProvider/sdcard/0audio/1568103220253.mp4
-     *  content://media/extenral/images/media/17766
-     *  content://com.android.providers.media.documents/document/image:67
-     *  content://com.android.providers.media.documents/document/image%67
-     *  file:///storage/emulated/0/0audio/1568103220253.mp4
-     * }
+     * 支持 uri类型:media,documents,file,fileProvider
+     * uri类型:[
+     * file:///storage/emulated/0/0audio/1568103220253.mp4
+     * content://media/extenral/images/media/17766
+     * content://com.android.providers.media.documents/document/image:67
+     * content://com.android.providers.media.documents/document/image%67
+     * content://com.zhoug.androidcommon.app.fileprovider/sdcard/0audio/1568103220253.mp4
+     * <p>
+     * ]
      *
-     * @param context
-     * @param uri
-     * @return
+     * @param context {@link Context}
+     * @param uri  {@link Uri}
+     * @return string
      */
     public static String getPathFromUri(Context context, Uri uri) {
         if (uri == null) {
-            Log.i(TAG, "getPathFromUri: uri is null");
+            Log.e(TAG, "getPathFromUri: uri is null");
             return null;
         }
         Log.d(TAG, "getPathFromUri:uri=" + uri);
         String path = null;
         String scheme = uri.getScheme();
         if (scheme == null) {
-            path= uri.getPath();
+            path = uri.getPath();
         } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-            path= uri.getPath();
+            path = uri.getPath();
         } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-            if(isDocumentUri(uri)){
-                path=getPathFromDocumentUri(context, uri);
-            }else if(isMediaUri(uri)){
-                path=getPathFromMediaUri(context, uri);
+            if (isDocumentUri(uri)) {
+                Log.d(TAG, "getPathFromUri:isDocumentUri");
+                path = getPathFromDocumentUri(context, uri);
+            } else if (isMediaUri(uri)) {
+                Log.d(TAG, "getPathFromUri:isMediaUri");
+                path = getPathFromMediaUri(context, uri);
+            } else if (isFileProviderUri(uri)) {
+                Log.d(TAG, "getPathFromUri:isFileProviderUri");
+                path = getPathFromFileProvider(context, uri);
+            } else {
+                Log.e(TAG, "unknow content uri");
             }
+        } else {
+            Log.e(TAG, "unknow uri");
         }
 
-        Log.i(TAG, "getPathFromUri:path="+path);
-        Log.d(TAG, "getPathFromUri:>>>>>>>>>>>>>>");
+        Log.i(TAG, "getPathFromUri:path=" + path);
+        return path;
+    }
+
+
+    /**
+     * 解析uri获取文件真实路径
+     * 支持uri类型:content://media/
+     * eg:content://media/extenral/images/media/17766
+     *
+     * @param context
+     * @param uri
+     * @return
+     */
+    private static String getPathFromMediaUri(Context context, Uri uri) {
+//        Log.d(TAG, "getPathFromMediaUri:media uri");
+        if (uri == null) {
+            return null;
+        }
+        String path = null;
+        Cursor cursor = context.getContentResolver().query(uri, new String[]{MediaStore.MediaColumns.DATA}, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                if (columnIndex >= 0) {
+                    path = cursor.getString(columnIndex);
+                }
+            }
+            cursor.close();
+        }
+//        Log.d(TAG, "getPathFromMediaUri:path="+path);
         return path;
     }
 
@@ -171,31 +224,32 @@ public class UriUtils {
     /**
      * 解析uri获取文件真实路径
      * 4.4以上版本
-     * uri类型:content://com.android.providers.media.documents/document/
+     * 支持uri类型:content://com.android.providers.media.documents/document/
      * eg: content://com.android.providers.media.documents/document/image:67
      * eg:content://com.android.providers.media.documents/document/image%67
+     *
      * @param context
      * @param uri
      * @return
      */
-    private static String getPathFromDocumentUri(Context context,Uri uri){
-        if(uri==null){
+    private static String getPathFromDocumentUri(Context context, Uri uri) {
+        if (uri == null) {
             return null;
         }
-        String path=null;
+        String path = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             //image:378558
             try {
                 String documentId = DocumentsContract.getDocumentId(uri);
 //                Log.d(TAG, "getPathFromDocumentUri:documentId="+documentId);
-                if(documentId!=null){
+                if (documentId != null) {
                     String[] split = documentId.split(":");
                     //image
-                    String type=split[0];
+                    String type = split[0];
                     //378558
-                    String id=split[1];
-                    String [] columns=null;
-                    Cursor cursor=null;
+                    String id = split[1];
+                    String[] columns = null;
+                    Cursor cursor = null;
                     if (type.equalsIgnoreCase("image")) {
                         //根据id查询语句
                         String sel = MediaStore.Images.Media._ID + "=" + id;
@@ -213,9 +267,9 @@ public class UriUtils {
                         cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, columns, sel, null, null);
                     }
 
-                    if(cursor!=null){
-                        if(cursor.moveToFirst()){
-                             path = cursor.getString(cursor.getColumnIndex(columns[0]));
+                    if (cursor != null) {
+                        if (cursor.moveToFirst()) {
+                            path = cursor.getString(cursor.getColumnIndex(columns[0]));
                         }
                         cursor.close();
                     }
@@ -228,50 +282,159 @@ public class UriUtils {
         return path;
     }
 
-
     /**
      * 解析uri获取文件真实路径
-     * uri类型:content://media/
-     * eg:content://media/extenral/images/media/17766
+     *支持uri类型 fileProvider 类型的uri
+     * eg:content://com.tencent.mtt.fileprovider/QQBrowser/Music/123123.mp3
+     * 原理:FileProvider的内部接口PathStrategy提供了Uri和File相互转换的方法,但是只暴露给开发者获取Uri的方法,
+     * 要想通过uri获取File我们可以同过反射实现
+     * {@link FileProvider#getPathStrategy(Context, String),FileProvider.PathStrategy#getFileForUri(Uri)}
      * @param context
      * @param uri
      * @return
      */
-    private static String getPathFromMediaUri(Context context,Uri uri){
-//        Log.d(TAG, "getPathFromMediaUri:media uri");
-        if(uri==null){
+    private static String getPathFromFileProvider(Context context, Uri uri) {
+        if (uri == null) {
             return null;
         }
-        String path=null;
-        Cursor cursor = context.getContentResolver().query(uri, new String[]{MediaStore.MediaColumns.DATA}, null, null, null);
-        if(cursor!=null){
-            if(cursor.moveToFirst()){
-                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                if(columnIndex>=0){
-                    path = cursor.getString(columnIndex);
+        String authority = uri.getAuthority();
+        if (authority == null) {
+            return uri.getPath();
+        }
+        Class<FileProvider> fileProviderCls=FileProvider.class;
+        try {
+            Method getPathStrategy = fileProviderCls.getDeclaredMethod("getPathStrategy", Context.class, String.class);
+            if(null!=getPathStrategy){
+                //getPathStrategy 是静态方法所以可以传入null
+                getPathStrategy.setAccessible(true);
+                //获取到了PathStrategy实例
+                Object pathStrategy = getPathStrategy.invoke(null, context, authority);
+                getPathStrategy.setAccessible(false);
+                if(pathStrategy!=null){
+                    //PathStrategy类是私有的所以只能通过类型来加载class
+                    //PathStrategy是FileProvider的内部类
+                    Class<?> PathStrategyCls = Class.forName(FileProvider.class.getName() + "$PathStrategy");
+                    Method getFileForUri = PathStrategyCls.getDeclaredMethod("getFileForUri", Uri.class);
+                    if(null != getFileForUri){
+                        getFileForUri.setAccessible(true);
+                        Object file = getFileForUri.invoke(pathStrategy, uri);
+                        getFileForUri.setAccessible(false);
+                        if(file instanceof File){
+                            return ((File) file).getAbsolutePath();
+                        }
+                    }
+                }
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+
+    private void zxc(Context context, Uri uri) {
+        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+                String name = null;
+                long size = 0;
+                if (nameIndex >= 0) {
+                    name = cursor.getString(nameIndex);
+                }
+                if (sizeIndex >= 0) {
+                    size = cursor.getLong(nameIndex);
                 }
             }
             cursor.close();
         }
-//        Log.d(TAG, "getPathFromMediaUri:path="+path);
-        return path;
     }
 
-
-    private static boolean isDocumentUri(Uri uri){
-        if(uri!=null){
+    /**
+     * 判断uri的authority是否是com.android.providers.media.documents
+     *
+     * @param uri
+     * @return
+     */
+    private static boolean isDocumentUri(Uri uri) {
+        if (uri != null) {
             return "com.android.providers.media.documents".equals(uri.getAuthority());
         }
         return false;
     }
 
-    private static boolean isMediaUri(Uri uri){
-        if(uri!=null){
+    /**
+     * 判断uri的authority是否是media
+     *
+     * @param uri
+     * @return
+     */
+    private static boolean isMediaUri(Uri uri) {
+        if (uri != null) {
             return "media".equals(uri.getAuthority());
         }
         return false;
     }
 
+    /**
+     * 判断是否是fileprovider类型的uri
+     * content://com.zhoug.androidcommon.app.fileprovider/sdcard/0audio/1568103220253.mp4
+     *
+     * @param uri
+     * @return
+     */
+    private static boolean isFileProviderUri(Uri uri) {
+        if (null != uri) {
+            String authority = uri.getAuthority();
+            if (authority != null) {
+                int index = authority.lastIndexOf(".");
+                if(index>=0 && index<authority.length()-2){
+                    String fileprovider = authority.substring(index + 1);
+                    return "fileprovider".equalsIgnoreCase(fileprovider);
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+    /**
+     * @param context
+     * @param authority
+     * @return
+     */
+    private static boolean _isDocumentsProvider(Context context, String authority) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            final Intent intent = new Intent(PROVIDER_INTERFACE);
+            final List<ResolveInfo> infos;
+            infos = context.getPackageManager().queryIntentContentProviders(intent, 0);
+            for (ResolveInfo info : infos) {
+                /**
+                 *  com.android.documentsui.archives
+                 *  com.android.externalstorage.documents
+                 *  com.android.mtp.documents
+                 *  com.android.providers.downloads.documents
+                 *  com.android.providers.media.documents
+                 * com.android.shell.documents
+                 */
+                Log.d(TAG, "isDocumentsProvider:" + info.providerInfo.authority);
+                if (authority.equals(info.providerInfo.authority)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 
     /**
@@ -284,7 +447,7 @@ public class UriUtils {
      */
     public static Uri getUriForFile(Context context, String path, String authority) {
         if (authority == null) {
-            authority = context.getPackageName() + ".fileProvider";
+            authority = context.getPackageName() + ".fileprovider";
         }
         //7.0以上
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

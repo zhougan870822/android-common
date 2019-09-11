@@ -30,12 +30,12 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.zhoug.androidcommon.app.fileProvider"
+            android:authorities="com.zhoug.androidcommon.app.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/common_file_paths"/>
         </provider>
         <activity android:name=".MainActivity"
             >

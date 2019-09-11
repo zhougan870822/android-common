@@ -424,10 +424,10 @@ public class AppUtils {
     }
 
     /**
-     * 安装apk文件 authority默认：context.getPackageName()+".fileProvider"
+     * 安装apk文件 authority默认：context.getPackageName()+".fileprovider"
      */
     public static void installApk(Context context, File file ) throws FileNotFoundException {
-        AppUtils.installApk(context,file,context.getPackageName()+".fileProvider" );
+        AppUtils.installApk(context,file,context.getPackageName()+".fileprovider" );
 
     }
 

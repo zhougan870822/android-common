@@ -7,7 +7,7 @@ import android.support.v4.content.FileProvider;
  * AndroidManifest.xml配置
  * <provider
  *    android:name="android.support.v4.content.FileProvider"
- *    android:authorities="packageName.fileProvider"
+ *    android:authorities="package.fileprovider"
  *    android:grantUriPermissions="true"
  *    android:exported="false">
  *    <meta-data
@@ -19,7 +19,7 @@ import android.support.v4.content.FileProvider;
  *
  */
 public class ZFileProvider extends FileProvider {
-    public static  String AUTHORITY="packageName.fileProvider";
+    public static  String AUTHORITY="packageName.fileprovider";
 
 
 }

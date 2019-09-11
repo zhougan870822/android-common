@@ -363,9 +363,7 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==1011 || requestCode==1012|| requestCode==1013|| requestCode==1014|| requestCode==1015|| requestCode==1016){
             if(data!=null){
                 String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-                String pathFromUri1 = UriUtils.getPathFromUri1(this, data.getData());
                 Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-                Log.d(TAG, "onActivityResult:pathFromUri1="+pathFromUri1);
                 toast(pathFromUri+"");
                 if(pathFromUri!=null && FileUtils.getType(pathFromUri)==FileUtils.TYPE_IMAGE){
                     long time1=System.currentTimeMillis();
