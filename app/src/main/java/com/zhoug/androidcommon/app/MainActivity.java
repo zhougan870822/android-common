@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Uri uriForFile = UriUtils.getUriForFile(MainActivity.this, path);
                 Log.d(TAG, "onClick:uriForFile="+uriForFile);
-                Log.d(TAG, "onClick:path="+UriUtils.getPathFromUri1(MainActivity.this,uriForFile ));
+                Log.d(TAG, "onClick:path="+UriUtils.getPathFromUri(MainActivity.this,uriForFile ));
 
                 startActivityForResult(IntentUtils.getCaptureImageIntent(MainActivity.this, path, null), 11);
             }
@@ -363,6 +363,8 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==1011 || requestCode==1012|| requestCode==1013|| requestCode==1014|| requestCode==1015|| requestCode==1016){
             if(data!=null){
                 String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+
+
                 Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
                 toast(pathFromUri+"");
                 if(pathFromUri!=null && FileUtils.getType(pathFromUri)==FileUtils.TYPE_IMAGE){
@@ -380,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else  if(requestCode==102 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null) {
                 long time1=System.currentTimeMillis();
@@ -400,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else  if(requestCode==103 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null) {
                 long time1=System.currentTimeMillis();
@@ -417,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else  if(requestCode==104 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null) {
                 Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1920, null);
@@ -428,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else  if(requestCode==105 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null) {
                 Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1920, null);
@@ -439,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }else  if(requestCode==107 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
             Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
             if(pathFromUri!=null){
                 long time1=System.currentTimeMillis();
@@ -471,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode==RESULT_OK){
                 String pathFromUri=null;
                 if(data!=null){
-                     pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+                     pathFromUri = UriUtils.getPathFromUri(this, data.getData());
                 }
                 if(pathFromUri==null){
                     pathFromUri=path;
@@ -487,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode==RESULT_OK){
                 String pathFromUri=null;
                 if(data!=null){
-                    pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+                    pathFromUri = UriUtils.getPathFromUri(this, data.getData());
                 }
                 if(pathFromUri==null){
                     pathFromUri=path;
@@ -504,7 +506,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode==RESULT_OK){
                 String pathFromUri=null;
                 if(data!=null){
-                    pathFromUri = UriUtils.getPathFromUri1(this, data.getData());
+                    pathFromUri = UriUtils.getPathFromUri(this, data.getData());
                 }
                 if(pathFromUri==null){
                     pathFromUri=path;

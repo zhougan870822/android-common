@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -18,12 +19,17 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
+import com.zhoug.android.common.beans.ComFile;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
 import static android.provider.DocumentsContract.PROVIDER_INTERFACE;
+import static com.zhoug.android.common.Constant.FILE_PROVIDER_AUTHORITY_SUFFIX;
 
 /**
  * Uri 处理工具
@@ -337,10 +343,17 @@ public class UriUtils {
         return null;
     }
 
-
-
-
-    private void zxc(Context context, Uri uri) {
+    /**
+     * 从uri中查询出文件名和大小连同uri保存在ComFile对象中
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static ComFile getComFile(Context context, Uri uri) {
+        ContentResolver contentResolver = context.getContentResolver();
+        if(contentResolver==null){
+            return null;
+        }
         Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -348,16 +361,21 @@ public class UriUtils {
                 int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
                 String name = null;
                 long size = 0;
+//                Log.d(TAG, "getComFile:columnCount="+cursor.getColumnCount());
                 if (nameIndex >= 0) {
                     name = cursor.getString(nameIndex);
                 }
                 if (sizeIndex >= 0) {
-                    size = cursor.getLong(nameIndex);
+                    size = cursor.getLong(sizeIndex);
                 }
+
+                return new ComFile(name, size, uri);
             }
             cursor.close();
         }
+        return null;
     }
+
 
     /**
      * 判断uri的authority是否是com.android.providers.media.documents
@@ -447,7 +465,7 @@ public class UriUtils {
      */
     public static Uri getUriForFile(Context context, String path, String authority) {
         if (authority == null) {
-            authority = context.getPackageName() + ".fileprovider";
+            authority = context.getPackageName() +FILE_PROVIDER_AUTHORITY_SUFFIX;
         }
         //7.0以上
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

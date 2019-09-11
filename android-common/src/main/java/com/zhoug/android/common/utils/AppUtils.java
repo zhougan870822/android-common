@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import static com.zhoug.android.common.Constant.FILE_PROVIDER_AUTHORITY_SUFFIX;
+
 /**
  * App工具 哈哈我也不晓得怎么命名
  */
@@ -427,7 +429,7 @@ public class AppUtils {
      * 安装apk文件 authority默认：context.getPackageName()+".fileprovider"
      */
     public static void installApk(Context context, File file ) throws FileNotFoundException {
-        AppUtils.installApk(context,file,context.getPackageName()+".fileprovider" );
+        AppUtils.installApk(context,file,context.getPackageName()+FILE_PROVIDER_AUTHORITY_SUFFIX );
 
     }
 

@@ -11,6 +11,8 @@ import android.support.v4.content.FileProvider;
 
 import java.io.File;
 
+import static com.zhoug.android.common.Constant.FILE_PROVIDER_AUTHORITY_SUFFIX;
+
 public class IntentUtils {
     private static final String TAG = "IntentUtils";
 
@@ -28,7 +30,7 @@ public class IntentUtils {
             minitype = "*/*";
         }
         if(authority==null){
-            authority=context.getPackageName() + ".fileProvider";
+            authority=context.getPackageName() +FILE_PROVIDER_AUTHORITY_SUFFIX;
         }
 
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
@@ -70,7 +72,7 @@ public class IntentUtils {
             minitype = "*/*";
         }
         if(authority==null){
-            authority=context.getPackageName() + ".fileProvider";
+            authority=context.getPackageName() + FILE_PROVIDER_AUTHORITY_SUFFIX;
         }
 
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
