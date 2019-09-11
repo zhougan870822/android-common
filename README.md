@@ -14,10 +14,19 @@ android 通用工具包 不包含任何ui
 3. xxxx
 
 #### 使用说明
+Step 1.Add it in your root build.gradle at the end of repositories:
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://www.jitpack.io' }
+		}
+	}
+  
+  Step 2. Add the dependency
 
-1. xxxx
-2. xxxx
-3. xxxx
+	dependencies {
+	        implementation 'com.github.zhougan870822:android-common:Tag'
+	}
 
 #### 参与贡献
 
