@@ -143,7 +143,7 @@ public class AppUtils {
      *
      * @return
      */
-    private static int getWindowRotation(Context context) {
+    public static int getWindowRotation(Context context) {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         int rotation = windowManager.getDefaultDisplay().getRotation();
         //手机旋转的角度

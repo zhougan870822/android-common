@@ -16,9 +16,10 @@ public class IOUtils {
      *
      * @param resultPath 保存的路径
      * @param bytes      文件字节数组
+     * @param append      是否在源文件末尾开始保存
      * @return
      */
-    public static boolean keepFile(String resultPath, byte[] bytes) {
+    public static boolean keepFile(String resultPath, byte[] bytes,boolean append) {
         FileOutputStream fos = null;
         boolean success = false;
         File parentFile = new File(resultPath).getParentFile();
@@ -27,7 +28,7 @@ public class IOUtils {
             parentFile = null;
         }
         try {
-            fos = new FileOutputStream(resultPath);
+            fos = new FileOutputStream(resultPath,append);
             fos.write(bytes, 0, bytes.length);
             fos.flush();
             success = true;
@@ -44,6 +45,19 @@ public class IOUtils {
             }
         }
         return success;
+    }
+
+
+
+    /**
+     * 保存文件
+     *
+     * @param resultPath 保存的路径
+     * @param bytes      文件字节数组
+     * @return
+     */
+    public static boolean keepFile(String resultPath, byte[] bytes) {
+       return  keepFile(resultPath,bytes ,false );
     }
 
     /**
