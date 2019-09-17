@@ -28,6 +28,7 @@ import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -504,5 +505,37 @@ public class AppUtils {
     }
 
 
+    /**
+     * 应用程序运行命令获取 Root权限，设备必须已破解(获得ROOT权限)
+     *
+     * @return 应用程序是/否获取Root权限
+     */
+    public static boolean requestRootPermission(Context context) {
+        Process process = null;
+        DataOutputStream os = null;
+        try {
+            String cmd="chmod 777 " + context.getPackageCodePath();
+            process = Runtime.getRuntime().exec("su"); //切换到root帐号
+            os = new DataOutputStream(process.getOutputStream());
+            os.writeBytes(cmd + "\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            process.waitFor();
+        } catch (Exception e) {
+//            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+                if(process!=null){
+                    process.destroy();
+                }
+            } catch (Exception e) {
+            }
+        }
+        return true;
+    }
 
 }
