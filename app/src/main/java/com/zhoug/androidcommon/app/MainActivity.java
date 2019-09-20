@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.zhoug.android.common.content.BitmapDraw;
 import com.zhoug.android.common.beans.Contacts;
 import com.zhoug.android.common.broadcast.NetworkReceiver;
 import com.zhoug.android.common.utils.AppUtils;
+import com.zhoug.android.common.utils.AudioUtils;
 import com.zhoug.android.common.utils.BitmapUtils;
 import com.zhoug.android.common.utils.ContactsUtils;
 import com.zhoug.android.common.utils.FileUtils;
@@ -365,7 +367,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        findViewById(R.id.btn15).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AudioUtils instance = AudioUtils.instance(MainActivity.this);
+                instance.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
 
+            }
+        });
+
+        findViewById(R.id.btn16).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AudioUtils instance = AudioUtils.instance(MainActivity.this);
+                instance.setStreamVolume(AudioManager.STREAM_MUSIC, 5, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+
+            }
+        });
     }
 
 
