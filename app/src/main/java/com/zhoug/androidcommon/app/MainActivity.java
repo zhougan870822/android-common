@@ -3,6 +3,7 @@ package com.zhoug.androidcommon.app;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -34,6 +35,7 @@ import com.zhoug.android.common.utils.IntentUtils;
 import com.zhoug.android.common.utils.NetworkUtils;
 import com.zhoug.android.common.utils.ResourceUtils;
 import com.zhoug.android.common.utils.SmsUtils;
+import com.zhoug.android.common.utils.ThreadUtils;
 import com.zhoug.android.common.utils.TimeUtils;
 import com.zhoug.android.common.utils.UriUtils;
 
@@ -66,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void findViews(){
-        ActivityCompat.requestPermissions(this,new String[]{
+    private void findViews() {
+        ActivityCompat.requestPermissions(this, new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.REQUEST_INSTALL_PACKAGES,
@@ -78,53 +80,54 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.RECORD_AUDIO,
 
 
-        } , 10012);
+        }, 10012);
 
-        btn2=findViewById(R.id.btn2);
-        btn3=findViewById(R.id.btn3);
-        btn4=findViewById(R.id.btn4);
-        btn5=findViewById(R.id.btn5);
-        imageView1=findViewById(R.id.imageView1);
-        imageView2=findViewById(R.id.imageView2);
+        btn2 = findViewById(R.id.btn2);
+        btn3 = findViewById(R.id.btn3);
+        btn4 = findViewById(R.id.btn4);
+        btn5 = findViewById(R.id.btn5);
+        imageView1 = findViewById(R.id.imageView1);
+        imageView2 = findViewById(R.id.imageView2);
 
 
         test();
 
         addListener();
     }
-    private void test(){
+
+    private void test() {
         Point screenSize = AppUtils.getScreenSize(this);
         Point realScreenSize = AppUtils.getRealScreenSize(this);
-        Log.d(TAG, "screenSize:"+screenSize);
-        Log.d(TAG, "realScreenSize:"+realScreenSize);
-        Log.d(TAG, "findViews:差="+(realScreenSize.y-screenSize.y));
+        Log.d(TAG, "screenSize:" + screenSize);
+        Log.d(TAG, "realScreenSize:" + realScreenSize);
+        Log.d(TAG, "findViews:差=" + (realScreenSize.y - screenSize.y));
         int statusHeight = AppUtils.getStatusHeight(this);
-        Log.d(TAG, "findViews:statusHeight="+statusHeight);
+        Log.d(TAG, "findViews:statusHeight=" + statusHeight);
         int navigationBarHeight = AppUtils.getNavigationBarHeight(this);
-        Log.d(TAG, "findViews:navigationBarHeight="+navigationBarHeight);
+        Log.d(TAG, "findViews:navigationBarHeight=" + navigationBarHeight);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            Log.d(TAG, "findViews:底部导航栏是否显示"+AppUtils.isNavigationBarShow(this));
+            Log.d(TAG, "findViews:底部导航栏是否显示" + AppUtils.isNavigationBarShow(this));
         }
 
-        Log.d(TAG, "findViews:是否竖屏:"+AppUtils.isPortrait(this));
-        Log.d(TAG, "findViews: 本机号码"+AppUtils.getLocalPhoneNumber(this));
+        Log.d(TAG, "findViews:是否竖屏:" + AppUtils.isPortrait(this));
+        Log.d(TAG, "findViews: 本机号码" + AppUtils.getLocalPhoneNumber(this));
 
         Date parse = TimeUtils.parse("2018-11-12 08:55:36", "yyyy-MM-dd HH:mm:ss");
-        Log.d(TAG, "test: "+TimeUtils.format(parse,"yyyy-MM-dd HH:mm:ss" ));
-        Log.d(TAG, "test:"+TimeUtils.format(new Date(),null ));
-        Log.d(TAG, "test:"+TimeUtils.format(System.currentTimeMillis(),"yyyyMMddHHmmss" ));
-        Log.d(TAG, "test:"+TimeUtils.formatDateT("2018-18-12T08:55:36"));
-        Log.d(TAG, "test:"+TimeUtils.formatDateT("2018-18-12TT08:55:36","TT"));
-        Log.d(TAG, "test:"+TimeUtils.formatDateYMD("2018-18-12TT08:55:36"));
-        Log.d(TAG, "test:"+TimeUtils.formatDateHMS("2018-18-12T08:55:36"));
-        Log.d(TAG, "test:"+TimeUtils.getCurrentTime());
-        Log.d(TAG, "test:"+TimeUtils.getCurrentTime("yyyyMMddHHmm"));
+        Log.d(TAG, "test: " + TimeUtils.format(parse, "yyyy-MM-dd HH:mm:ss"));
+        Log.d(TAG, "test:" + TimeUtils.format(new Date(), null));
+        Log.d(TAG, "test:" + TimeUtils.format(System.currentTimeMillis(), "yyyyMMddHHmmss"));
+        Log.d(TAG, "test:" + TimeUtils.formatDateT("2018-18-12T08:55:36"));
+        Log.d(TAG, "test:" + TimeUtils.formatDateT("2018-18-12TT08:55:36", "TT"));
+        Log.d(TAG, "test:" + TimeUtils.formatDateYMD("2018-18-12TT08:55:36"));
+        Log.d(TAG, "test:" + TimeUtils.formatDateHMS("2018-18-12T08:55:36"));
+        Log.d(TAG, "test:" + TimeUtils.getCurrentTime());
+        Log.d(TAG, "test:" + TimeUtils.getCurrentTime("yyyyMMddHHmm"));
 
 
         netWorkBroadcastReceiver = NetworkUtils.registerReceiver(this, new NetworkReceiver.OnNetworkChangeListener() {
             @Override
             public void onChangeListener(int state) {
-                switch (state){
+                switch (state) {
                     case NetworkUtils.STATE_NONE:
                         toast("无网络");
                         break;
@@ -138,49 +141,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Log.d(TAG, "test:getDrawableId "+ ResourceUtils.getDrawableId(this,"ic_launcher_background" ));
-        Log.d(TAG, "test:getDrawableId "+R.drawable.ic_launcher_background);
+        Log.d(TAG, "test:getDrawableId " + ResourceUtils.getDrawableId(this, "ic_launcher_background"));
+        Log.d(TAG, "test:getDrawableId " + R.drawable.ic_launcher_background);
 
-        Log.d(TAG, "test:getColorId "+ ResourceUtils.getColorId(this,"colorAccent" ));
-        Log.d(TAG, "test:getColorId "+R.color.colorAccent);
+        Log.d(TAG, "test:getColorId " + ResourceUtils.getColorId(this, "colorAccent"));
+        Log.d(TAG, "test:getColorId " + R.color.colorAccent);
 
-        Log.d(TAG, "test:getDimenId "+ ResourceUtils.getDimenId(this,"zxc" ));
-        Log.d(TAG, "test:getDimenId "+R.dimen.zxc);
+        Log.d(TAG, "test:getDimenId " + ResourceUtils.getDimenId(this, "zxc"));
+        Log.d(TAG, "test:getDimenId " + R.dimen.zxc);
 
-        Log.d(TAG, "test:getId "+ ResourceUtils.getId(this,"btn11" ));
-        Log.d(TAG, "test:getId "+R.id.btn11);
+        Log.d(TAG, "test:getId " + ResourceUtils.getId(this, "btn11"));
+        Log.d(TAG, "test:getId " + R.id.btn11);
 
-        Log.d(TAG, "test:getLayoutId "+ ResourceUtils.getLayoutId(this,"activity_main" ));
-        Log.d(TAG, "test:getLayoutId "+R.layout.activity_main);
+        Log.d(TAG, "test:getLayoutId " + ResourceUtils.getLayoutId(this, "activity_main"));
+        Log.d(TAG, "test:getLayoutId " + R.layout.activity_main);
 
-        Log.d(TAG, "test:getStringId "+ ResourceUtils.getStringId(this,"string1" ));
-        Log.d(TAG, "test:getStringId "+R.string.string1);
+        Log.d(TAG, "test:getStringId " + ResourceUtils.getStringId(this, "string1"));
+        Log.d(TAG, "test:getStringId " + R.string.string1);
 
-        Log.d(TAG, "test:getXmlId "+ ResourceUtils.getXmlId(this,"common_file_paths" ));
-        Log.d(TAG, "test:getXmlId "+R.xml.common_file_paths);
+        Log.d(TAG, "test:getXmlId " + ResourceUtils.getXmlId(this, "common_file_paths"));
+        Log.d(TAG, "test:getXmlId " + R.xml.common_file_paths);
 
-        Log.d(TAG, "test:getStyleId "+ ResourceUtils.getStyleId(this,"AppTheme" ));
-        Log.d(TAG, "test:getStyleId "+R.style.AppTheme);
+        Log.d(TAG, "test:getStyleId " + ResourceUtils.getStyleId(this, "AppTheme"));
+        Log.d(TAG, "test:getStyleId " + R.style.AppTheme);
 
-        long time1=System.currentTimeMillis();
+        long time1 = System.currentTimeMillis();
         List<Contacts> contacts = ContactsUtils.getContacts(this);
-        long time2=System.currentTimeMillis();
-        Log.d(TAG, "test:"+(time2-time1));
-        Log.d(TAG, "test:联系人数目:"+contacts.size());
-        for (Contacts contact: contacts){
-            Log.d(TAG, "test:"+contact);
+        long time2 = System.currentTimeMillis();
+        Log.d(TAG, "test:" + (time2 - time1));
+        Log.d(TAG, "test:联系人数目:" + contacts.size());
+        for (Contacts contact : contacts) {
+            Log.d(TAG, "test:" + contact);
             String telPhone = contact.getTelPhone();
-            if(telPhone!=null){
-                String[] split = telPhone.split(Contacts.separator);
-                for(String s:split){
-                    Log.d(TAG, "test:"+s);
+            if (telPhone != null) {
+                String[] split = telPhone.split(Contacts.SEPARATOR);
+                for (String s : split) {
+                    Log.d(TAG, "test:" + s);
                 }
             }
             Log.d(TAG, "test:>>>>>>>>>>>>>>>>");
         }
 
 
-        sendSmsBroadcastReceiver= SmsUtils.registerReceiver(this, new SmsUtils.OnSendSmsListener() {
+        sendSmsBroadcastReceiver = SmsUtils.registerReceiver(this, new SmsUtils.OnSendSmsListener() {
             @Override
             public void onSendResult(boolean success) {
                 if (success) {
@@ -202,51 +205,232 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private void addListener(){
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1011 || requestCode == 1012 || requestCode == 1013 || requestCode == 1014 || requestCode == 1015 || requestCode == 1016) {
+            if (data != null) {
+                String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+
+
+                Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+                toast(pathFromUri + "");
+                if (pathFromUri != null && FileUtils.getType(pathFromUri) == FileUtils.TYPE_IMAGE) {
+                    long time1 = System.currentTimeMillis();
+                    Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1080, null);
+                    long time2 = System.currentTimeMillis();
+                    Log.d(TAG, "onActivityResult:" + (time2 - time1));
+                    Bitmap circleBitmap = BitmapUtils.createCircleBitmap(bitmap);
+                    long time3 = System.currentTimeMillis();
+                    Log.d(TAG, "onActivityResult:" + (time3 - time2));
+                    imageView1.setImageBitmap(circleBitmap);
+
+                }
+            }
+
+        } else if (requestCode == 102 && data != null) {
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+            if (pathFromUri != null) {
+                long time1 = System.currentTimeMillis();
+                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 0, 0, null);
+                long time2 = System.currentTimeMillis();
+                Log.d(TAG, "onActivityResult:" + (time2 - time1));
+                byte[] bytes = BitmapUtils.compressQualityTo(bitmap, 100);
+                Toast.makeText(this, "size=" + (bytes.length / 1024) + "kb", Toast.LENGTH_SHORT).show();
+
+                long time3 = System.currentTimeMillis();
+                Log.d(TAG, "onActivityResult:" + (time3 - time2));
+                Log.d(TAG, "onActivityResult:bytes.length=" + bytes.length);
+                Bitmap bitmap1 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                Log.d(TAG, "onActivityResult:[" + bitmap1.getWidth() + "," + bitmap1.getHeight() + "]");
+
+                imageView1.setImageBitmap(bitmap1);
+            }
+
+        } else if (requestCode == 103 && data != null) {
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+            if (pathFromUri != null) {
+                long time1 = System.currentTimeMillis();
+                byte[] bytes = BitmapUtils.compressTo(pathFromUri, 100);
+                Toast.makeText(this, "size=" + (bytes.length / 1024) + "kb", Toast.LENGTH_SHORT).show();
+                IOUtils.keepFile("/storage/emulated/0/0image1/" + System.currentTimeMillis() + ".jpg", bytes);
+                IOUtils.copyFile(pathFromUri, "/storage/emulated/0/0image1/" + "_" + System.currentTimeMillis() + ".jpg");
+
+                long time2 = System.currentTimeMillis();
+                Log.d(TAG, "onActivityResult:" + (time2 - time1));
+                Bitmap bitmap1 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                Log.d(TAG, "onActivityResult:[" + bitmap1.getWidth() + "," + bitmap1.getHeight() + "]");
+                imageView1.setImageBitmap(bitmap1);
+            }
+
+        } else if (requestCode == 104 && data != null) {
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+            if (pathFromUri != null) {
+                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1920, null);
+                imageView1.setImageBitmap(bitmap);
+                Bitmap mirrorHorizontal = BitmapUtils.getMirrorHorizontal(bitmap);
+                imageView2.setImageBitmap(mirrorHorizontal);
+
+            }
+
+        } else if (requestCode == 105 && data != null) {
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+            if (pathFromUri != null) {
+                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1920, null);
+                imageView1.setImageBitmap(bitmap);
+                Bitmap mirrorHorizontal = BitmapUtils.getMirrorVertical(bitmap);
+                imageView2.setImageBitmap(mirrorHorizontal);
+
+            }
+
+        } else if (requestCode == 107 && data != null) {
+            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+            Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+            if (pathFromUri != null) {
+                long time1 = System.currentTimeMillis();
+                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1080, null);
+                long time2 = System.currentTimeMillis();
+                Log.d(TAG, "onActivityResult:" + (time2 - time1));
+                Log.d(TAG, "onActivityResult:bitmap=" + bitmap);
+                Bitmap copy = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                new BitmapDraw().setAutoTextColor(false)
+                        .setBitmap(copy)
+                        .setGravity(BitmapDraw.BOTTOM)
+                        .setLineSpacing(10)
+                        .setTextSize(AppUtils.spTopx(this, 18))
+                        .setTexts(Arrays.asList("zxc", "自行车自行车在自行车自行车在自行车自行车在自行车自行车在自行车自行车在自行车自行车在465156", ",OK的发了个OK的发了个OK的发了个OK的发了个OK的发了个OK的发了个"))
+                        .setPadding(20, 20, 20, 50)
+                        .setTextColor(Color.RED)
+                        .draw();
+
+
+                long time3 = System.currentTimeMillis();
+                Log.d(TAG, "onActivityResult:" + (time3 - time2));
+
+                imageView1.setImageBitmap(bitmap);
+                imageView2.setImageBitmap(copy);
+
+
+            }
+        } else if (requestCode == 11) {
+            if (resultCode == RESULT_OK) {
+                String pathFromUri = null;
+                if (data != null) {
+                    pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+                }
+                if (pathFromUri == null) {
+                    pathFromUri = path;
+                }
+                Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+                startActivity(IntentUtils.getReadFileIntent(MainActivity.this, pathFromUri, FileUtils.getMimeType(pathFromUri)));
+
+            } else {
+                Log.d(TAG, "onActivityResult:取消");
+            }
+
+        } else if (requestCode == 12) {
+            if (resultCode == RESULT_OK) {
+                String pathFromUri = null;
+                if (data != null) {
+                    pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+                }
+                if (pathFromUri == null) {
+                    pathFromUri = path;
+                }
+                Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+
+                startActivity(IntentUtils.getReadFileIntent(MainActivity.this, pathFromUri, FileUtils.getMimeType(pathFromUri)));
+
+
+            } else {
+                Log.d(TAG, "onActivityResult:取消");
+            }
+        } else if (requestCode == 13) {
+            if (resultCode == RESULT_OK) {
+                String pathFromUri = null;
+                if (data != null) {
+                    pathFromUri = UriUtils.getPathFromUri(this, data.getData());
+                }
+                if (pathFromUri == null) {
+                    pathFromUri = path;
+                }
+                Log.d(TAG, "onActivityResult:pathFromUri=" + pathFromUri);
+
+                startActivity(IntentUtils.getReadFileIntent(MainActivity.this, pathFromUri, FileUtils.getMimeType(pathFromUri)));
+
+
+            } else {
+                Log.d(TAG, "onActivityResult:取消");
+            }
+        }
+
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NetworkUtils.unregisterReceiver(this, netWorkBroadcastReceiver);
+        SmsUtils.unregisterReceiver(this, sendSmsBroadcastReceiver);
+    }
+
+    private void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void addListener() {
         findViewById(R.id.btn1_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(IntentUtils.getPickImageIntent(),1011 );
+                startActivityForResult(IntentUtils.getPickImageIntent(), 1011);
             }
         });
         findViewById(R.id.btn1_2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(IntentUtils.getContentIntent("image/*"),1012 );
+                startActivityForResult(IntentUtils.getContentIntent("image/*"), 1012);
 
             }
         });
         findViewById(R.id.btn1_3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(IntentUtils.getPickVideoIntent(),1013 );
+                startActivityForResult(IntentUtils.getPickVideoIntent(), 1013);
             }
         });
         findViewById(R.id.btn1_4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(IntentUtils.getContentIntent("video/*"),1014 );
+                startActivityForResult(IntentUtils.getContentIntent("video/*"), 1014);
             }
         });
         findViewById(R.id.btn1_5).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(IntentUtils.getPickAudioIntent(),1015);
+                startActivityForResult(IntentUtils.getPickAudioIntent(), 1015);
             }
         });
         findViewById(R.id.btn1_6).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(IntentUtils.getContentIntent("audio/*"),1016 );
+                startActivityForResult(IntentUtils.getContentIntent("audio/*"), 1016);
             }
         });
 
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Intent.ACTION_PICK);
+                Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(intent,102 );
+                startActivityForResult(intent, 102);
             }
         });
 
@@ -254,26 +438,26 @@ public class MainActivity extends AppCompatActivity {
         btn3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Intent.ACTION_PICK);
+                Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(intent,103);
+                startActivityForResult(intent, 103);
             }
         });
         btn4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Intent.ACTION_PICK);
+                Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(intent,104);
+                startActivityForResult(intent, 104);
             }
         });
 
         btn5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Intent.ACTION_PICK);
+                Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(intent,105);
+                startActivityForResult(intent, 105);
             }
         });
 
@@ -282,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 try {
-                    AppUtils.installApk(MainActivity.this,FileUtils.getExternalFile("Tencent/QQfile_recv/qlymclz_v1.0.0.7_release.apk") );
+                    AppUtils.installApk(MainActivity.this, FileUtils.getExternalFile("Tencent/QQfile_recv/qlymclz_v1.0.0.7_release.apk"));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -291,9 +475,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn7).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Intent.ACTION_PICK);
+                Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(intent,107 );
+                startActivityForResult(intent, 107);
 
             }
         });
@@ -311,14 +495,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn9).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SmsUtils.sendSmsUseSystemUi(MainActivity.this,"10086","zxcsad" );
+                SmsUtils.sendSmsUseSystemUi(MainActivity.this, "10086", "zxcsad");
             }
         });
 
         findViewById(R.id.btn10).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SmsUtils.sendSms( MainActivity.this,"10086","1" );
+                SmsUtils.sendSms(MainActivity.this, "10086", "1");
 
 
             }
@@ -327,11 +511,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn11).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 path = FileUtils.getExternalFile("0image/" + System.currentTimeMillis() + ".jpg").getAbsolutePath();
+                path = FileUtils.getExternalFile("0image/" + System.currentTimeMillis() + ".jpg").getAbsolutePath();
 
                 Uri uriForFile = UriUtils.getUriForFile(MainActivity.this, path);
-                Log.d(TAG, "onClick:uriForFile="+uriForFile);
-                Log.d(TAG, "onClick:path="+UriUtils.getPathFromUri(MainActivity.this,uriForFile ));
+                Log.d(TAG, "onClick:uriForFile=" + uriForFile);
+                Log.d(TAG, "onClick:path=" + UriUtils.getPathFromUri(MainActivity.this, uriForFile));
 
                 startActivityForResult(IntentUtils.getCaptureImageIntent(MainActivity.this, path, null), 11);
             }
@@ -340,14 +524,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn12).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 path = FileUtils.getExternalFile("0video/" +System.currentTimeMillis() + ".mp4").getAbsolutePath();
+                path = FileUtils.getExternalFile("0video/" + System.currentTimeMillis() + ".mp4").getAbsolutePath();
                 startActivityForResult(IntentUtils.getCaptureVideoIntent(MainActivity.this, path, null), 12);
             }
         });
         findViewById(R.id.btn13).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 path = FileUtils.getExternalFile("0audio/" +System.currentTimeMillis() + ".amr").getAbsolutePath();
+                path = FileUtils.getExternalFile("0audio/" + System.currentTimeMillis() + ".amr").getAbsolutePath();
                 startActivityForResult(IntentUtils.getCaptureAudioIntent(MainActivity.this, path, null), 13);
             }
         });
@@ -355,14 +539,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn14).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UriUtils.getPathFromUri(MainActivity.this,Uri.parse("file:///zxc/111/222/123.jpg") );
-                path = FileUtils.getExternalFile("0audio/" +System.currentTimeMillis() + ".mp4").getAbsolutePath();
+                UriUtils.getPathFromUri(MainActivity.this, Uri.parse("file:///zxc/111/222/123.jpg"));
+                path = FileUtils.getExternalFile("0audio/" + System.currentTimeMillis() + ".mp4").getAbsolutePath();
 
-                UriUtils.getPathFromUri(MainActivity.this,Uri.fromFile(new File(path)) );
+                UriUtils.getPathFromUri(MainActivity.this, Uri.fromFile(new File(path)));
 
-                UriUtils.getPathFromUri(MainActivity.this,UriUtils.getUriForFile(MainActivity.this,path ));
-
-
+                UriUtils.getPathFromUri(MainActivity.this, UriUtils.getUriForFile(MainActivity.this, path));
 
 
             }
@@ -372,6 +554,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AudioUtils instance = AudioUtils.instance(MainActivity.this);
                 instance.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+
 
             }
         });
@@ -384,187 +567,55 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        findViewById(R.id.btn17).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ThreadUtils.setDebug(true);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ThreadUtils.runMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                toast("thread:" + Thread.currentThread().getName());
+                            }
+                        });
+                    }
+                }).start();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < 200; i++) {
+                            ThreadUtils.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.e(TAG, "thread name:"+Thread.currentThread().getName()+",count="+count);
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    count++;
+                                }
+                            });
+                        }
+                    }
+                }).start();
+
+            }
+        });
+
+        findViewById(R.id.btn18).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Application applicationByReflect = AppUtils.getApplicationByReflect();
+                Log.d(TAG, "onClick:applicationByReflect="+applicationByReflect);
+                toast(applicationByReflect==null ?"null":applicationByReflect.toString());
+            }
+        });
     }
 
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode==1011 || requestCode==1012|| requestCode==1013|| requestCode==1014|| requestCode==1015|| requestCode==1016){
-            if(data!=null){
-                String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-
-
-                Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-                toast(pathFromUri+"");
-                if(pathFromUri!=null && FileUtils.getType(pathFromUri)==FileUtils.TYPE_IMAGE){
-                    long time1=System.currentTimeMillis();
-                    Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1080, null);
-                    long time2=System.currentTimeMillis();
-                    Log.d(TAG, "onActivityResult:"+(time2-time1));
-                    Bitmap circleBitmap = BitmapUtils.createCircleBitmap(bitmap);
-                    long time3=System.currentTimeMillis();
-                    Log.d(TAG, "onActivityResult:"+(time3-time2));
-                    imageView1.setImageBitmap(circleBitmap);
-
-                }
-            }
-
-        }
-        else  if(requestCode==102 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-            Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-            if(pathFromUri!=null) {
-                long time1=System.currentTimeMillis();
-                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 0, 0, null);
-                long time2=System.currentTimeMillis();
-                Log.d(TAG, "onActivityResult:"+(time2-time1));
-                byte[] bytes = BitmapUtils.compressQualityTo(bitmap, 100);
-                Toast.makeText(this, "size="+(bytes.length/1024)+"kb", Toast.LENGTH_SHORT).show();
-
-                long time3=System.currentTimeMillis();
-                Log.d(TAG, "onActivityResult:"+(time3-time2));
-                Log.d(TAG, "onActivityResult:bytes.length="+bytes.length);
-                Bitmap bitmap1 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                Log.d(TAG, "onActivityResult:["+bitmap1.getWidth()+","+bitmap1.getHeight()+"]");
-
-                imageView1.setImageBitmap(bitmap1);
-            }
-
-        }else  if(requestCode==103 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-            Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-            if(pathFromUri!=null) {
-                long time1=System.currentTimeMillis();
-                byte[] bytes = BitmapUtils.compressTo(pathFromUri, 100);
-                Toast.makeText(this, "size="+(bytes.length/1024)+"kb", Toast.LENGTH_SHORT).show();
-                IOUtils.keepFile("/storage/emulated/0/0image1/"+System.currentTimeMillis()+".jpg",bytes );
-                IOUtils.copyFile(pathFromUri,"/storage/emulated/0/0image1/"+"_"+System.currentTimeMillis()+".jpg");
-
-                long time2=System.currentTimeMillis();
-                Log.d(TAG, "onActivityResult:"+(time2-time1));
-                Bitmap bitmap1 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                Log.d(TAG, "onActivityResult:["+bitmap1.getWidth()+","+bitmap1.getHeight()+"]");
-                imageView1.setImageBitmap(bitmap1);
-            }
-
-        }else  if(requestCode==104 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-            Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-            if(pathFromUri!=null) {
-                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1920, null);
-                imageView1.setImageBitmap(bitmap);
-                Bitmap mirrorHorizontal = BitmapUtils.getMirrorHorizontal(bitmap);
-                imageView2.setImageBitmap(mirrorHorizontal);
-
-            }
-
-        }else  if(requestCode==105 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-            Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-            if(pathFromUri!=null) {
-                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1920, null);
-                imageView1.setImageBitmap(bitmap);
-                Bitmap mirrorHorizontal = BitmapUtils.getMirrorVertical(bitmap);
-                imageView2.setImageBitmap(mirrorHorizontal);
-
-            }
-
-        }else  if(requestCode==107 && data!=null){
-            String pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-            Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-            if(pathFromUri!=null){
-                long time1=System.currentTimeMillis();
-                Bitmap bitmap = BitmapUtils.decodeFile(pathFromUri, 1080, 1080, null);
-                long time2=System.currentTimeMillis();
-                Log.d(TAG, "onActivityResult:"+(time2-time1));
-                Log.d(TAG, "onActivityResult:bitmap="+bitmap);
-                Bitmap copy = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-                new BitmapDraw().setAutoTextColor(false)
-                        .setBitmap(copy)
-                        .setGravity(BitmapDraw.BOTTOM)
-                        .setLineSpacing(10)
-                        .setTextSize(AppUtils.spTopx(this,18 ))
-                        .setTexts(Arrays.asList("zxc","自行车自行车在自行车自行车在自行车自行车在自行车自行车在自行车自行车在自行车自行车在465156",",OK的发了个OK的发了个OK的发了个OK的发了个OK的发了个OK的发了个"))
-                        .setPadding(20,20,20,50)
-                        .setTextColor(Color.RED)
-                        .draw();
-
-
-                long time3=System.currentTimeMillis();
-                Log.d(TAG, "onActivityResult:"+(time3-time2));
-
-                imageView1.setImageBitmap(bitmap);
-                imageView2.setImageBitmap(copy);
-
-
-            }
-        }else if(requestCode==11){
-            if(resultCode==RESULT_OK){
-                String pathFromUri=null;
-                if(data!=null){
-                     pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-                }
-                if(pathFromUri==null){
-                    pathFromUri=path;
-                }
-                Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-                startActivity(IntentUtils.getReadFileIntent(MainActivity.this,pathFromUri , FileUtils.getMimeType(pathFromUri)));
-
-            }else{
-                Log.d(TAG, "onActivityResult:取消");
-            }
-
-        }else if(requestCode==12){
-            if(resultCode==RESULT_OK){
-                String pathFromUri=null;
-                if(data!=null){
-                    pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-                }
-                if(pathFromUri==null){
-                    pathFromUri=path;
-                }
-                Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-
-                startActivity(IntentUtils.getReadFileIntent(MainActivity.this,pathFromUri , FileUtils.getMimeType(pathFromUri)));
-
-
-            }else{
-                Log.d(TAG, "onActivityResult:取消");
-            }
-        }else if(requestCode==13){
-            if(resultCode==RESULT_OK){
-                String pathFromUri=null;
-                if(data!=null){
-                    pathFromUri = UriUtils.getPathFromUri(this, data.getData());
-                }
-                if(pathFromUri==null){
-                    pathFromUri=path;
-                }
-                Log.d(TAG, "onActivityResult:pathFromUri="+pathFromUri);
-
-                startActivity(IntentUtils.getReadFileIntent(MainActivity.this,pathFromUri , FileUtils.getMimeType(pathFromUri)));
-
-
-            }else{
-                Log.d(TAG, "onActivityResult:取消");
-            }
-        }
-
-    }
-
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        NetworkUtils.unregisterReceiver(this,netWorkBroadcastReceiver );
-        SmsUtils.unregisterReceiver(this,sendSmsBroadcastReceiver );
-    }
-
-    private void toast(String msg){
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
+    int count = 1;
 }

@@ -1,10 +1,10 @@
 package com.zhoug.android.common.utils;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -16,7 +16,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -31,6 +30,7 @@ import android.view.inputmethod.InputMethodManager;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static com.zhoug.android.common.Constant.FILE_PROVIDER_AUTHORITY_SUFFIX;
@@ -41,6 +41,7 @@ import static com.zhoug.android.common.Constant.FILE_PROVIDER_AUTHORITY_SUFFIX;
 public class AppUtils {
     private static final String TAG = "AppUtils";
 
+    private static Application application;
     /**
      * 取得屏幕宽高,不包括系统装饰(eg:状态栏,导航栏)
      *
@@ -538,4 +539,35 @@ public class AppUtils {
         return true;
     }
 
+    /**
+     * 使用反射获取Application实例
+     * @return {@link #application}
+     */
+    public static Application getApplicationByReflect() {
+        if(application==null){
+            synchronized (AppUtils.class){
+                if(application==null){
+                    try {
+                        @SuppressLint("PrivateApi")
+                        Class<?> activityThread = Class.forName("android.app.ActivityThread");
+                        Object thread = activityThread.getMethod("currentActivityThread").invoke(null);
+                        Object app = activityThread.getMethod("getApplication").invoke(thread);
+                        if (app == null) {
+                            throw new NullPointerException("u should init first");
+                        }
+                        application=(Application) app;
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return application;
+    }
 }

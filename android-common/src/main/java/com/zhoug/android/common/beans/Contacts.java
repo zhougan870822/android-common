@@ -16,7 +16,7 @@ public class Contacts {
     /**
      * 电话号码分割线
      */
-    public static final String separator=",";
+    public static final String SEPARATOR=",";
 
 
     public String getName() {

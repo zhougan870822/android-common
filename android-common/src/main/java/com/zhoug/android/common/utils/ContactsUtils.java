@@ -65,11 +65,11 @@ public class ContactsUtils {
                         while (phoneQuery.moveToNext()){
                             String number = phoneQuery.getString(phoneQuery.getColumnIndex(PHONE_NUMBER));
 //                            Log.d(TAG, "getContacts:number="+number);
-                            telPhone.append(Contacts.separator);
+                            telPhone.append(Contacts.SEPARATOR);
                             telPhone.append(number);
                         }
                         //第一个分隔符去掉
-                        if(telPhone.length()>1 && Contacts.separator.equals(telPhone.substring(0,1))){
+                        if(telPhone.length()>1 && Contacts.SEPARATOR.equals(telPhone.substring(0,1))){
                             telPhone.delete(0,1 );
                         }
 //                        Log.d(TAG, "getContacts:telPhone="+telPhone.toString());

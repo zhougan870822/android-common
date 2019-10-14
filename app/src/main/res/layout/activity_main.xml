@@ -136,6 +136,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="设置音量" />
+        <Button
+            android:id="@+id/btn17"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ThreadUtils"
+            android:textAllCaps="false"
+            />
+        <Button
+            android:id="@+id/btn18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="反射获取Application"
+            android:textAllCaps="false"
+            />
 
 
     </LinearLayout>
