@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -37,6 +38,7 @@ import com.zhoug.android.common.utils.ResourceUtils;
 import com.zhoug.android.common.utils.SmsUtils;
 import com.zhoug.android.common.utils.ThreadUtils;
 import com.zhoug.android.common.utils.TimeUtils;
+import com.zhoug.android.common.utils.ToastUtils;
 import com.zhoug.android.common.utils.UriUtils;
 
 import java.io.File;
@@ -205,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
 
 
     @Override
@@ -591,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
                             ThreadUtils.execute(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.e(TAG, "thread name:"+Thread.currentThread().getName()+",count="+count);
+                                    Log.e(TAG, "thread name:" + Thread.currentThread().getName() + ",count=" + count);
                                     try {
                                         Thread.sleep(1000);
                                     } catch (InterruptedException e) {
@@ -611,11 +612,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Application applicationByReflect = AppUtils.getApplicationByReflect();
-                Log.d(TAG, "onClick:applicationByReflect="+applicationByReflect);
-                toast(applicationByReflect==null ?"null":applicationByReflect.toString());
+                Log.d(TAG, "onClick:applicationByReflect=" + applicationByReflect);
+                toast(applicationByReflect == null ? "null" : applicationByReflect.toString());
             }
+        });
+
+        findViewById(R.id.btn19).setOnClickListener(v -> {
+            colorIndex++;
+            if (colorIndex >= colors.length) {
+                colorIndex = 0;
+            }
+            ToastUtils.setBgColor(colors[colorIndex]);
+            ToastUtils.setMsgColor(Color.parseColor("#00ffff"));
+            ToastUtils.setGravity(Gravity.BOTTOM);
+            ToastUtils.showShort("测试ToastUtils");
+
         });
     }
 
+    private int[] colors = new int[]{Color.RED, Color.BLUE, Color.GREEN};
+    private int colorIndex = -1;
     int count = 1;
 }
