@@ -2,7 +2,6 @@ package com.zhoug.androidcommon.app;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -23,9 +21,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.zhoug.android.common.content.BitmapDraw;
 import com.zhoug.android.common.beans.Contacts;
 import com.zhoug.android.common.broadcast.NetworkReceiver;
+import com.zhoug.android.common.content.BitmapDraw;
 import com.zhoug.android.common.utils.AppUtils;
 import com.zhoug.android.common.utils.AudioUtils;
 import com.zhoug.android.common.utils.BitmapUtils;
@@ -47,7 +45,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity>>>";
 
     private Button btn1;
@@ -63,9 +61,12 @@ public class MainActivity extends AppCompatActivity {
     private String path;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected int contentViewId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void onCreateView(Bundle savedInstanceState) {
         findViews();
 
     }
@@ -626,6 +627,13 @@ public class MainActivity extends AppCompatActivity {
             ToastUtils.setMsgColor(Color.parseColor("#00ffff"));
             ToastUtils.setGravity(Gravity.BOTTOM);
             ToastUtils.showShort("测试ToastUtils");
+
+        });
+
+        findViewById(R.id.btn20).setOnClickListener(v->{
+            Intent intent=new Intent(this,StatusChangeActivity.class);
+            startActivity(intent);
+
 
         });
     }
